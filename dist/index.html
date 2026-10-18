@@ -64,7 +64,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .lg-hdr{-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .scrolled .lg-hdr{background:rgba(5,5,5,.46)}
 /* UI Kit → Button: Secondary. Default — белый 15% + обводка 30% + blur 30; Hover — как Primary Hover */
-.lg-btn,.lg-w15{background:rgba(253,253,253,.15);border-color:var(--w30);-webkit-backdrop-filter:blur(30px);backdrop-filter:blur(30px)}
+.lg-btn,.lg-w15{background:rgba(253,253,253,.15);border-color:var(--w30);-webkit-backdrop-filter:blur(15px);backdrop-filter:blur(15px)} /* Figma blur 30 = CSS 15 */
 .lg-btn:hover,.lg-w15:hover{background:var(--pink);border-color:var(--w30);box-shadow:var(--glow)}
 .lg-panel{background:rgba(5,5,5,.58)}
 .lg-panel:hover{background:rgba(5,5,5,.68)}
@@ -117,8 +117,8 @@ section{position:relative;scroll-margin-top:112px}
   border-radius:10px;font-weight:500;font-size:16px;line-height:1;white-space:nowrap;position:relative;overflow:hidden;
   transition:transform .45s var(--ease),box-shadow .3s,background-color .3s,border-color .3s}
 /* UI Kit → Button: Primary. Hover — та же заливка + обводка белым 30% + свечение */
-.btn-pink{background:var(--pink);color:var(--white);border:1px solid transparent}
-.btn-pink:hover{border-color:var(--w30);box-shadow:var(--glow)}
+.btn-pink{background:var(--pink);color:var(--white)}
+.btn-pink:hover{box-shadow:inset 0 0 0 1px var(--w30),var(--glow)}   /* обводка внутрь — размер кнопки не меняется */
 .btn.lg{color:var(--white)}
 .btn:active{transform:scale(.97)}
 
@@ -159,7 +159,18 @@ section{position:relative;scroll-margin-top:112px}
 .hdr .ci small{font-size:12px;opacity:.7;line-height:normal}
 .soc{display:flex;gap:8px}
 .ic{width:40px;height:40px;display:grid;place-items:center}
-.ic svg{width:22px;height:22px}
+.ic svg{width:24px;height:24px}
+/* Figma Header (десктоп): плашки высотой 80; слева логотип 90×68 (absolute, x24 y6) и меню, прижатое вправо в плашке 578;
+   справа контакты —24— соцкнопки —16— кнопка */
+@media (min-width:1081px){
+  .pill{height:80px}
+  .pill:not(.r){width:578px;justify-content:flex-end;position:relative}
+  .pill:not(.r) .brand{position:absolute;left:24px;top:6px;width:90px;height:68px}
+  .pill.r{gap:24px}
+  .pill.r .btn{margin-left:-8px}
+  .dd .nl{padding:0}
+  .ci .nl{height:auto}
+}
 .burger{display:none;position:relative;width:40px;height:40px;border-radius:10px;pointer-events:auto}
 .burger span{position:absolute;left:11px;width:18px;height:1.5px;border-radius:2px;background:#fff;z-index:3;
   transition:transform .4s var(--ease),opacity .3s}
