@@ -59,6 +59,16 @@ def rich(s):
     return s.replace("\n", "<br>")
 
 
+SHORT = r"в|во|с|со|и|к|ко|о|об|у|а|но|на|по|до|за|из|от|не|для|без|при|про"
+
+
+def nobr(s):
+    """Висячие предлоги: короткое слово склеивается со следующим неразрывным пробелом,
+    перед тире — тоже неразрывный пробел. Работает по тексту с [..]-разметкой."""
+    s = re.sub(r"(?<![\wЁё])(%s) +" % SHORT, "\\1\u00a0", s, flags=re.I)
+    return re.sub(r" +([-–—])", "\u00a0\\1", s)
+
+
 def card_html(c, level):
     tags = "".join('<span class="tag">%s</span>' % html.escape(t) for t in c["tags"])
     prices = "".join(
@@ -85,7 +95,7 @@ def package_sections(p, data):
             '  <div class="hero-blur"><i></i><i></i><i></i><i></i></div>\n'
             '  <div class="hero-veil"></div>\n'
             '  <div class="wrap"><h1 class="d in" id="heroH1">%s</h1></div>\n'
-            '</section>\n') % rich(p["hero"])
+            '</section>\n') % rich(nobr(p["hero"]))
     levels = [1, 2, 3] if len(p["cards"]) == 3 else [1] * len(p["cards"])
     cards = "".join(card_html(c, lv) for c, lv in zip(p["cards"], levels))
     common = data["common"]
