@@ -1147,7 +1147,7 @@ var REVIEWS = [
 ];
 
 /* ═══════════ WEBGL IMAGE TRANSITION ═══════════
-   noise-displaced dissolve with a lit seam — used everywhere images swap */
+   простой плавный наплыв (cross-fade) — по её просьбе вместо растворения по шуму со вспышкой */
 var VS = 'attribute vec2 p;varying vec2 v;void main(){v=p*0.5+0.5;gl_Position=vec4(p,0.,1.);}';
 var FS = [
 'precision highp float;',
@@ -1159,24 +1159,14 @@ var FS = [
 '  return mix(mix(hs(i),hs(i+vec2(1,0)),f.x),mix(hs(i+vec2(0,1)),hs(i+vec2(1,1)),f.x),f.y);}',
 'float fbm(vec2 p){return nz(p)*0.6+nz(p*2.03)*0.27+nz(p*4.11)*0.13;}',
 'void main(){',
-' float p=uP,w=0.27;',
-' float fld=fbm(v*3.1+uSeed)*0.60+(v.x*0.36+(1.0-v.y)*0.26)*0.68;',
-' float e=p*(1.0+2.0*w)-w;',
-' float m=1.0-smoothstep(e-w,e+w,fld);',
-' float band=1.0-abs(m*2.0-1.0);',
-' float amp=sin(p*3.14159)*0.05*band;',
-' vec2 d=vec2(fbm(v*4.0+uSeed+p*0.6)-0.5,fbm(v*4.0+uSeed+7.3-p*0.6)-0.5)*2.0;',
-' float za=1.0+0.055*p, zb=1.0+0.055*(1.0-p);',
-' vec4 ca=texture2D(uA,cover((v-0.5)/za+0.5,uRes,uAR)+d*amp);',
-' vec4 cb=texture2D(uB,cover((v-0.5)/zb+0.5,uRes,uBR)-d*amp);',
-' vec3 c=mix(ca.rgb,cb.rgb,m);',
-' c+=band*0.09;',
-' gl_FragColor=vec4(c,1.0);',
+' vec4 ca=texture2D(uA,cover(v,uRes,uAR));',
+' vec4 cb=texture2D(uB,cover(v,uRes,uBR));',
+' gl_FragColor=vec4(mix(ca.rgb,cb.rgb,uP),1.0);',
 '}'].join('\n');
 
 function Fx(host, names){
   this.host = host; this.names = names; this.i = 0; this.ok = false;
-  this.p = 0; this.dur = 1150; this.t = 0; this.busy = false;
+  this.p = 0; this.dur = 900; this.t = 0; this.busy = false;
   var cv = this.cv = document.createElement('canvas');
   var gl = null;
   try{ gl = cv.getContext('webgl',{antialias:false,alpha:false,depth:false,stencil:false,
@@ -1253,6 +1243,9 @@ Fx.prototype.set = function(i){
   this.load(name, function(){
     var t = self.tex[name]; if(!t) return;
     if(RM){ self.a = t; self.b = t; self.p = 0; self.resize(); self.draw(); return; }
+    /* смена посреди перехода: если новое фото уже проявилось больше чем наполовину — считаем его текущим,
+       чтобы картинка не прыгала назад */
+    if(self.busy && self.p >= .5) self.a = self.b;
     self.b = t; self.p = 0; self.t = 0; self.busy = true;
   });
 };
@@ -1262,7 +1255,7 @@ Fx.prototype.tick = function(dt){
   if(!this.busy) return;
   this.t += dt;
   var k = clamp(this.t/this.dur,0,1);
-  this.p = k<.5 ? 4*k*k*k : 1-Math.pow(-2*k+2,3)/2;   /* easeInOutCubic */
+  this.p = -(Math.cos(Math.PI*k) - 1) / 2;   /* easeInOutSine — мягкий старт и финиш */
   this.draw();
   if(k>=1){ this.busy = false; this.a = this.b; this.p = 0; this.draw(); }
 };
