@@ -283,9 +283,6 @@ section{position:relative;scroll-margin-top:112px}
 .room-bars{position:absolute;left:48px;right:48px;bottom:44px;z-index:3;display:flex;gap:8px}
 .room-bars .bar{cursor:pointer}
 .room-bars .bar::before{content:'';position:absolute;inset:-9px 0}
-.room-zoom{position:absolute;right:24px;top:24px;z-index:3;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;
-  color:var(--white);opacity:0;transform:scale(.9);transition:opacity .4s var(--ease),transform .4s var(--ease),color .3s}
-.room:hover .room-zoom{opacity:1;transform:none}
 .room-side{flex:1 1 50%;min-width:0;background:var(--card);padding:48px;display:flex;flex-direction:column;justify-content:space-between;gap:24px}
 .room-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
 .room-no{font-size:16px;color:var(--w60);white-space:nowrap}
@@ -487,8 +484,8 @@ footer{position:relative;display:flex;flex-direction:column;align-items:center;
 .mod-x{position:absolute;right:20px;top:20px;z-index:10;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;
   color:var(--white);transition:color .3s}
 /* UI Kit → Button/Modal Action Close / Expand: Hover — иконка белая 30%, фон не меняется */
-.mod-x:hover,.rd-exp:hover,.room-zoom:hover{color:var(--w30)}
-.mod-x.lg-panel:hover,.rd-exp.lg-panel:hover,.room-zoom.lg-panel:hover{background:rgba(5,5,5,.58)}
+.mod-x:hover,.rd-exp:hover{color:var(--w30)}
+.mod-x.lg-panel:hover,.rd-exp.lg-panel:hover{background:rgba(5,5,5,.58)}
 .mod-bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:opacity .5s}
 .rd-panel{position:absolute;left:clamp(12px,1.6vw,24px);top:clamp(12px,1.6vw,24px);bottom:clamp(12px,1.6vw,24px);z-index:5;
   width:min(575px,46%);display:flex;flex-direction:column;gap:12px;overflow-y:auto;overscroll-behavior:contain;
@@ -1340,7 +1337,6 @@ ROOMS.forEach(function(r, idx){
      '<div class="room-dim"></div>'+
      '<div class="room-photo" data-fx="'+r.slides.join(',')+'">'+
        r.slides.map(function(s,j){return '<div class="rp'+(j?'':' on')+'" style="background-image:'+img(s)+'"></div>'}).join('')+
-       '<button class="room-zoom lg lg-panel" data-zoom="'+idx+'" aria-label="Смотреть фото"><svg width="20" height="20"><use href="#i-exp"/></svg></button>'+
        '<div class="room-bars">'+r.slides.map(function(){return '<div class="bar"><i></i></div>'}).join('')+'</div>'+
      '</div>'+
      '<div class="room-side">'+

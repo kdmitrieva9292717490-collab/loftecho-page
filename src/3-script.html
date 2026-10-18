@@ -270,7 +270,6 @@ ROOMS.forEach(function(r, idx){
      '<div class="room-dim"></div>'+
      '<div class="room-photo" data-fx="'+r.slides.join(',')+'">'+
        r.slides.map(function(s,j){return '<div class="rp'+(j?'':' on')+'" style="background-image:'+img(s)+'"></div>'}).join('')+
-       '<button class="room-zoom lg lg-panel" data-zoom="'+idx+'" aria-label="Смотреть фото"><svg width="20" height="20"><use href="#i-exp"/></svg></button>'+
        '<div class="room-bars">'+r.slides.map(function(){return '<div class="bar"><i></i></div>'}).join('')+'</div>'+
      '</div>'+
      '<div class="room-side">'+
