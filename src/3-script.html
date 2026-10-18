@@ -1,0 +1,630 @@
+<style>
+.fx-on .fg-img,.fx-on .rp{display:none}
+</style>
+<script>
+(function(){
+'use strict';
+var $ = function(s,c){return (c||document).querySelector(s)};
+var $$ = function(s,c){return [].slice.call((c||document).querySelectorAll(s))};
+var clamp = function(v,a,b){return v<a?a:v>b?b:v};
+var RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+var img = function(n){return 'var(--i-'+n+')'};
+var ROOT = getComputedStyle(document.documentElement);
+var srcCache = {};
+function src(name){
+  if(srcCache[name]) return srcCache[name];
+  var v = ROOT.getPropertyValue('--i-'+name).trim();
+  var m = v.match(/url\((?:"|')?(.*?)(?:"|')?\)/);
+  return (srcCache[name] = m ? m[1] : '');
+}
+
+/* ═══════════ DATA ═══════════ */
+var ROOMS = [
+ {name:'Зал космос',  no:'Зал № 1', area:'21', guests:'До 13 гостей', guest:'от 650', rent:'от 3 800',
+  slides:['kosmos','g8','c9','g2','rev1']},
+ {name:'Зал лава',    no:'Зал № 2', area:'18', guests:'До 12 гостей', guest:'от 650', rent:'от 3 500',
+  slides:['lava','rev2','g9','g1','g13']},
+ {name:'Зал тропики', no:'Зал № 3', area:'16', guests:'До 10 гостей', guest:'от 650', rent:'от 3 000',
+  slides:['tropiki','g7','g5','c6','c4']},
+ {name:'Зал лагуна',  no:'Зал № 4', area:'17', guests:'До 10 гостей', guest:'от 650', rent:'от 3 000',
+  slides:['laguna','rev3','g10','g14','g6']},
+ {name:'Зал Эйфория', no:'Зал № 5', area:'9',  guests:'До 6 гостей',  guest:'от 650', rent:'от 2 600',
+  slides:['euphoria','g11','g16','g3','g12']}
+];
+var COMBOS = [
+ {t:'День рождения в караоке', i:'c1'}, {t:'Романтическое свидание', i:'c2'},
+ {t:'Караоке для друзей',      i:'c3'}, {t:'Девичник',               i:'c4'},
+ {t:'Корпоратив',              i:'c5'}, {t:'Лаундж-комбо в караоке',  i:'c6'},
+ {t:'Кино-комбо в караоке',    i:'c1'}, {t:'Последний звонок',        i:'c8'},
+ {t:'Детский день рождения',   i:'c9'}
+];
+var GAL_ROWS = [
+ ['g1','g2','g3','g4','g5'],
+ ['g6','g7','g8','g9','g10','g11'],
+ ['g12','g13','g14','g15','g16','g3']
+];
+var GAL_ALL = ['g1','g2','g3','g4','g5','g6','g7','g8','g9','g10','g11','g12','g13','g14','g15','g16'];
+var REVIEWS = [
+ {n:'Николай', r:'Зал Космос', av:'av1', p:'rev1',
+  t:'Решили отпраздновать компанией и поздравить наших девушек с 8 марта в этом месте. Брали зал «космос». Чисто не пахнет, уютно и достаточно было места для компании из 8 человек. Мягкие диваны, опрятные. Уже хорошее впечатление создалось когда зашли в зал. Минус в том, что кондиционер не справлялся и было немного душно. Больше минусов не нашёл. Сервис присутствует, есть кнопка вызова администратора.'},
+ {n:'Надежда Береза', r:'Зал Лава', av:'av2', p:'rev2',
+  t:'Праздновали день рождения в зале Лава. Хороший зал! Чисто, уютно, атмосферно. Брали вместе в едой — пиццы, закуски, компот, фрукты — всё свежее, вкусное! Торт и поздравления шикарны. Звук хороший. Кондиционер отличный) Хороший администратор — вежливый, приятный. Клуб маленький, но очень уютный. Рекомендую 👍'},
+ {n:'Светлана Рыбина', r:'День рождения', av:'av2', p:'rev3',
+  t:'Прекрасное место! Отмечала свой ДР, осталась в восторге! Ребята молодцы! Новые уютные комнаты, прекрасный звук с отличной шумоизоляцией! Новая аппаратура!) Соотношение цена-качество просто супер, есть с чем сравнить) Вернёмся ещё не один раз! Так держать!'}
+];
+
+/* ═══════════ WEBGL IMAGE TRANSITION ═══════════
+   noise-displaced dissolve with a lit seam — used everywhere images swap */
+var VS = 'attribute vec2 p;varying vec2 v;void main(){v=p*0.5+0.5;gl_Position=vec4(p,0.,1.);}';
+var FS = [
+'precision highp float;',
+'uniform sampler2D uA,uB;uniform vec2 uRes,uAR,uBR;uniform float uP,uSeed;varying vec2 v;',
+'vec2 cover(vec2 uv,vec2 r,vec2 i){float ra=r.x/r.y,ia=i.x/i.y;',
+'  vec2 s=ra<ia?vec2(ra/ia,1.):vec2(1.,ia/ra);return (uv-0.5)*s+0.5;}',
+'float hs(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
+'float nz(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);',
+'  return mix(mix(hs(i),hs(i+vec2(1,0)),f.x),mix(hs(i+vec2(0,1)),hs(i+vec2(1,1)),f.x),f.y);}',
+'float fbm(vec2 p){return nz(p)*0.6+nz(p*2.03)*0.27+nz(p*4.11)*0.13;}',
+'void main(){',
+' float p=uP,w=0.27;',
+' float fld=fbm(v*3.1+uSeed)*0.60+(v.x*0.36+(1.0-v.y)*0.26)*0.68;',
+' float e=p*(1.0+2.0*w)-w;',
+' float m=1.0-smoothstep(e-w,e+w,fld);',
+' float band=1.0-abs(m*2.0-1.0);',
+' float amp=sin(p*3.14159)*0.05*band;',
+' vec2 d=vec2(fbm(v*4.0+uSeed+p*0.6)-0.5,fbm(v*4.0+uSeed+7.3-p*0.6)-0.5)*2.0;',
+' float za=1.0+0.055*p, zb=1.0+0.055*(1.0-p);',
+' vec4 ca=texture2D(uA,cover((v-0.5)/za+0.5,uRes,uAR)+d*amp);',
+' vec4 cb=texture2D(uB,cover((v-0.5)/zb+0.5,uRes,uBR)-d*amp);',
+' vec3 c=mix(ca.rgb,cb.rgb,m);',
+' c+=band*0.09;',
+' gl_FragColor=vec4(c,1.0);',
+'}'].join('\n');
+
+function Fx(host, names){
+  this.host = host; this.names = names; this.i = 0; this.ok = false;
+  this.p = 0; this.dur = 1150; this.t = 0; this.busy = false;
+  var cv = this.cv = document.createElement('canvas');
+  var gl = null;
+  try{ gl = cv.getContext('webgl',{antialias:false,alpha:false,depth:false,stencil:false,
+        powerPreference:'low-power'}) || cv.getContext('experimental-webgl'); }catch(e){}
+  if(!gl) return;
+  function sh(t,s){var o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);
+    return gl.getShaderParameter(o,gl.COMPILE_STATUS)?o:null}
+  var vs = sh(gl.VERTEX_SHADER,VS), fs = sh(gl.FRAGMENT_SHADER,FS);
+  if(!vs||!fs) return;
+  var pr = gl.createProgram(); gl.attachShader(pr,vs); gl.attachShader(pr,fs); gl.linkProgram(pr);
+  if(!gl.getProgramParameter(pr,gl.LINK_STATUS)) return;
+  gl.useProgram(pr);
+  var buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+  var loc = gl.getAttribLocation(pr,'p');
+  gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+  this.gl = gl; this.pr = pr; this.ok = true;
+  this.u = {A:gl.getUniformLocation(pr,'uA'),B:gl.getUniformLocation(pr,'uB'),
+    res:gl.getUniformLocation(pr,'uRes'),ar:gl.getUniformLocation(pr,'uAR'),
+    br:gl.getUniformLocation(pr,'uBR'),p:gl.getUniformLocation(pr,'uP'),
+    seed:gl.getUniformLocation(pr,'uSeed')};
+  gl.uniform1i(this.u.A,0); gl.uniform1i(this.u.B,1);
+  gl.uniform1f(this.u.seed, (names.length*7.13)%10);
+  this.tex = {};
+  host.insertBefore(cv, host.firstChild);
+  host.classList.add('fx-on');
+  var self = this;
+  this.load(names[0], function(){ self.a = self.tex[names[0]]; self.b = self.a; self.resize(); self.draw(); });
+  names.slice(1).forEach(function(n){ self.load(n) });
+}
+Fx.prototype.load = function(name, cb){
+  var self = this, gl = this.gl;
+  if(this.tex[name]){ cb && cb(); return; }
+  var im = new Image();
+  im.onload = function(){
+    var t = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D,t);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,im);
+    self.tex[name] = {t:t,w:im.naturalWidth,h:im.naturalHeight};
+    cb && cb();
+  };
+  im.src = src(name);
+};
+Fx.prototype.resize = function(){
+  var r = this.host.getBoundingClientRect();
+  if(!r.width || !r.height) return;
+  var dpr = Math.min(devicePixelRatio||1, 2);
+  var w = Math.round(r.width*dpr), h = Math.round(r.height*dpr);
+  if(this.cv.width===w && this.cv.height===h) return;
+  this.cv.width = w; this.cv.height = h;
+  this.gl.viewport(0,0,w,h);
+  this.gl.uniform2f(this.u.res,w,h);
+  this.dirty = true;
+};
+Fx.prototype.draw = function(){
+  var gl = this.gl; if(!this.a || !this.b) return;
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,this.a.t);
+  gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,this.b.t);
+  gl.uniform2f(this.u.ar,this.a.w,this.a.h);
+  gl.uniform2f(this.u.br,this.b.w,this.b.h);
+  gl.uniform1f(this.u.p,this.p);
+  gl.drawArrays(gl.TRIANGLES,0,3);
+};
+Fx.prototype.set = function(i){
+  if(i===this.i) return; var self = this, name = this.names[i];
+  this.i = i;
+  if(!this.ok){ return; }
+  this.load(name, function(){
+    var t = self.tex[name]; if(!t) return;
+    if(RM){ self.a = t; self.b = t; self.p = 0; self.resize(); self.draw(); return; }
+    self.b = t; self.p = 0; self.t = 0; self.busy = true;
+  });
+};
+Fx.prototype.tick = function(dt){
+  if(!this.ok) return;
+  if(this.dirty){ this.dirty = false; this.draw(); }
+  if(!this.busy) return;
+  this.t += dt;
+  var k = clamp(this.t/this.dur,0,1);
+  this.p = k<.5 ? 4*k*k*k : 1-Math.pow(-2*k+2,3)/2;   /* easeInOutCubic */
+  this.draw();
+  if(k>=1){ this.busy = false; this.a = this.b; this.p = 0; this.draw(); }
+};
+
+/* ═══════════ REVEAL ═══════════ */
+var io = new IntersectionObserver(function(es){
+  es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+},{rootMargin:'0px 0px -12% 0px',threshold:.08});
+function watch(root){ $$('.rv',root).forEach(function(el){io.observe(el)}); }
+
+/* ═══════════ HEADER ═══════════ */
+var hdr = $('#hdr'), lastY = 0;
+$('#burger').addEventListener('click', function(){
+  document.body.classList.toggle('mopen');
+  document.body.classList.toggle('locked', document.body.classList.contains('mopen'));
+});
+$$('#mnav a').forEach(function(a){ a.addEventListener('click', function(){
+  document.body.classList.remove('mopen','locked');
+});});
+
+/* ═══════════ HERO ═══════════ */
+var kbs = $('#kbs'), heroH1 = $('#heroH1'), metrics = $('.metrics');
+requestAnimationFrame(function(){ document.body.classList.add('loaded'); });
+
+var nf = new Intl.NumberFormat('ru-RU');
+function fmt(v,f){
+  if(f==='dec') return v.toFixed(1);
+  if(f==='rub') return nf.format(Math.round(v)).replace(/ /g,' ')+' ₽';
+  if(f==='plus') return Math.round(v)+'+';
+  if(f==='do') return 'до '+Math.round(v);
+  return String(Math.round(v));
+}
+var mio = new IntersectionObserver(function(es){
+  es.forEach(function(e){
+    if(!e.isIntersecting) return; mio.unobserve(e.target);
+    var el = e.target, to = parseFloat(el.dataset.num), f = el.dataset.fmt, t0 = null, D = 1500;
+    if(RM){ el.textContent = fmt(to,f); return; }
+    (function step(t){
+      if(!t0) t0 = t;
+      var p = clamp((t-t0)/D,0,1), e2 = 1-Math.pow(2,-10*p);
+      el.textContent = fmt(to*e2, f);
+      if(p<1) requestAnimationFrame(step); else el.textContent = fmt(to,f);
+    })(performance.now());
+  });
+},{threshold:.4});
+$$('[data-num]').forEach(function(el){ mio.observe(el) });
+
+/* ═══════════ MAGNETIC BUTTONS ═══════════ */
+$$('.mag').forEach(function(el){
+  if(RM) return;
+  el.addEventListener('pointermove', function(e){
+    var r = el.getBoundingClientRect();
+    el.style.transform = 'translate('+((e.clientX-r.left-r.width/2)*.16)+'px,'+((e.clientY-r.top-r.height/2)*.28)+'px)';
+  });
+  el.addEventListener('pointerleave', function(){ el.style.transform = ''; });
+});
+
+/* ═══════════ FEATURES ═══════════ */
+var fTrack = $('#featsTrack'),
+    fMedia = $('#fgMedia'),
+    fImgs  = $$('.fg-img', fTrack),
+    fLists = $$('.fg-list > div', fTrack),
+    fCaps  = $$('.fg-cap span', fTrack),
+    fBars  = $$('.fg-bars .bar i', fTrack),
+    fCur   = -1, fN = 3, fAuto = 0;
+var fFx = new Fx(fMedia, fMedia.dataset.fx.split(','));
+
+function featSet(i, frac){
+  if(i !== fCur){
+    fCur = i;
+    fFx.set(i);
+    [fImgs,fLists,fCaps].forEach(function(g){
+      g.forEach(function(el,j){ el.classList.toggle('on', j===i) });
+    });
+  }
+  fBars.forEach(function(b,j){
+    b.style.transform = 'scaleX('+(j<i?1:j>i?0:clamp(frac,0,1))+')';
+  });
+}
+featSet(0,0);
+
+/* ═══════════ ROOMS ═══════════ */
+var stack = $('#roomsStack');
+ROOMS.forEach(function(r, idx){
+  var slot = document.createElement('div');
+  slot.className = 'room-slot';
+  slot.innerHTML =
+   '<article class="room" data-room="'+idx+'">'+
+     '<div class="room-dim"></div>'+
+     '<div class="room-photo" data-fx="'+r.slides.join(',')+'">'+
+       r.slides.map(function(s,j){return '<div class="rp'+(j?'':' on')+'" style="background-image:'+img(s)+'"></div>'}).join('')+
+       '<button class="room-zoom lg lg-panel" data-zoom="'+idx+'" aria-label="Смотреть фото"><svg width="20" height="20"><use href="#i-exp"/></svg></button>'+
+       '<div class="room-bars">'+r.slides.map(function(){return '<div class="bar"><i></i></div>'}).join('')+'</div>'+
+     '</div>'+
+     '<div class="room-side">'+
+       '<div>'+
+         '<div class="room-hd"><h3 class="d h3">'+r.name+'</h3><span class="room-no">'+r.no+'</span></div>'+
+         '<div class="tags"><span class="tag">'+r.area+' м<sup>2</sup></span><span class="tag">'+r.guests+'</span></div>'+
+       '</div>'+
+       '<div class="room-foot">'+
+         '<div class="prices">'+
+           '<div class="pb"><div class="pb-t"><b>Цена за гостя</b><span class="badge">Акция с пн-чт</span></div>'+
+             '<div class="pv d"><span class="a">'+r.guest+'</span><span class="b">₽/час</span></div></div>'+
+           '<div class="pb"><div class="pb-t"><b>Аренда зала</b></div>'+
+             '<div class="pv d"><span class="a">'+r.rent+'</span><span class="b">₽/час</span></div></div>'+
+         '</div>'+
+         '<button class="btn lg lg-w15" data-room-open="'+idx+'">Подробнее</button>'+
+       '</div>'+
+     '</div>'+
+   '</article>';
+  stack.appendChild(slot);
+});
+var slots = $$('.room-slot', stack), cards = $$('.room', stack), dims = $$('.room-dim', stack);
+
+function Slider(root, dur){
+  this.bars = $$('.bar', root); this.slides = $$('.rp', root);
+  this.n = this.slides.length; this.i = 0; this.t = 0; this.dur = dur; this.vis = false; this.hov = false;
+  this.fx = new Fx(root, root.dataset.fx.split(','));
+  var self = this;
+  this.bars.forEach(function(b,j){ b.addEventListener('click', function(){ self.go(j) }) });
+  root.addEventListener('pointerenter', function(){ self.hov = true });
+  root.addEventListener('pointerleave', function(){ self.hov = false });
+  new IntersectionObserver(function(es){ self.vis = es[0].isIntersecting },{threshold:.15}).observe(root);
+  this.paint();
+}
+Slider.prototype.paint = function(){
+  var self = this;
+  this.slides.forEach(function(s,j){ s.classList.toggle('on', j===self.i) });
+  this.bars.forEach(function(b,j){
+    b.firstElementChild.style.transform = 'scaleX('+(j<self.i?1:j>self.i?0:self.t/self.dur)+')';
+  });
+};
+Slider.prototype.go = function(j){ this.i = (j+this.n)%this.n; this.t = 0; this.fx.set(this.i); this.paint(); };
+Slider.prototype.tick = function(dt){
+  this.fx.tick(dt);
+  if(!this.vis || this.hov || RM) return;
+  this.t += dt;
+  if(this.t >= this.dur){ this.t = 0; this.i = (this.i+1)%this.n; this.fx.set(this.i); }
+  this.paint();
+};
+var sliders = $$('.room-photo', stack).map(function(el){ return new Slider(el, 5200) });
+
+/* ═══════════ COMBOS (Card/Promo) ═══════════ */
+$('#combosGrid').innerHTML = COMBOS.map(function(c,j){
+  return '<a class="combo up" href="#combos" style="--d:'+(j%3*80)+'ms">'+
+    '<div class="combo-img" style="background-image:'+img(c.i)+'"></div>'+
+    '<div class="combo-veil"></div>'+
+    '<div class="combo-b"><div class="combo-t d">'+c.t+'</div></div>'+
+    '<span class="combo-link">Подробнее <svg viewBox="0 0 24 24"><use href="#i-arr24"/></svg></span></a>';
+}).join('');
+if(!RM) $$('.combo').forEach(function(el){
+  var rx=0, ry=0, tx=0, ty=0, on=false;
+  el.addEventListener('pointerenter', function(){ on = true });
+  el.addEventListener('pointermove', function(e){
+    var r = el.getBoundingClientRect();
+    tx = (e.clientX-r.left)/r.width-.5; ty = (e.clientY-r.top)/r.height-.5;
+  });
+  el.addEventListener('pointerleave', function(){ on = false; tx = ty = 0 });
+  el.__tilt = function(){
+    rx += ((on?ty:0)-rx)*.12; ry += ((on?tx:0)-ry)*.12;
+    if(Math.abs(rx)<1e-4 && Math.abs(ry)<1e-4 && !on){ el.style.transform=''; return }
+    el.style.transform = 'rotateX('+(-rx*11)+'deg) rotateY('+(ry*13)+'deg) translateZ('+(on?26:0)+'px) scale('+(on?1.015:1)+')';
+  };
+});
+var tilts = $$('.combo').map(function(e){return e.__tilt}).filter(Boolean);
+
+/* ═══════════ MARQUEES (gallery + review photos) ═══════════ */
+function Marquee(el, dir, speed){
+  this.el = el; this.dir = dir; this.speed = speed; this.x = 0; this.w = 0; this.mult = 1; this.target = 1;
+}
+Marquee.prototype.measure = function(){ this.w = this.el.scrollWidth/2 };
+Marquee.prototype.tick = function(dt){
+  if(!this.w) this.measure();
+  if(RM || !this.w) return;
+  this.mult += (this.target-this.mult)*.07;
+  this.x -= this.dir*this.speed*this.mult*dt/1000;
+  if(this.x <= -this.w) this.x += this.w;
+  if(this.x >= 0) this.x -= this.w;
+  this.el.style.transform = 'translate3d('+this.x+'px,0,0)';
+};
+
+$('#mq').innerHTML = GAL_ROWS.map(function(row,ri){
+  var cells = row.concat(row).map(function(g){
+    return '<div class="ph" data-gal="'+GAL_ALL.indexOf(g)+'" style="background-image:'+img(g)+'"></div>';
+  }).join('');
+  return '<div class="mq-row" data-dir="'+(ri===1?-1:1)+'">'+cells+'</div>';
+}).join('');
+var mqs = $$('.mq-row').map(function(el,i){ return new Marquee(el, +el.dataset.dir, [26,21,24][i]) });
+/* hover slows the whole carousel to 8 % — it never fully stops */
+$('#mq').addEventListener('pointerenter', function(){ mqs.forEach(function(m){ m.target = .08 }) });
+$('#mq').addEventListener('pointerleave', function(){ mqs.forEach(function(m){ m.target = 1 }) });
+
+/* ═══════════ REVIEWS ═══════════ */
+var rPh = $('#revPhotos'), rCd = $('#revCards'), rDots = $('#revDots'),
+    N = REVIEWS.length, SET = 3, rIdx = N, rLock = false, rHover = false, rAuto = 0;
+function starRow(){ var s=''; for(var i=0;i<5;i++) s+='<svg viewBox="0 0 26.7 26.6" style="color:var(--yellow)"><use href="#i-star"/></svg>'; return '<div class="stars">'+s+'</div>'; }
+var rp = '', rc = '';
+for(var s0=0;s0<SET;s0++) REVIEWS.forEach(function(r){
+  rp += '<div class="rev-photo" style="background-image:'+img(r.p)+'"></div>';
+  rc += '<div class="rev-card lg lg-panel">'+
+        '<div class="rev-u"><div class="rev-av" style="background-image:'+img(r.av)+'"></div>'+
+        '<div><b>'+r.n+'</b><small>'+r.r+'</small></div></div>'+starRow()+
+        '<p class="rev-txt">'+r.t+'</p></div>';
+});
+rPh.innerHTML = rp; rCd.innerHTML = rc;
+rDots.innerHTML = REVIEWS.map(function(_,j){return '<span class="dot'+(j?'':' on')+'" data-dot="'+j+'"></span>'}).join('');
+var rDotEls = $$('.dot', rDots);
+var revPhotoMq = new Marquee(rPh, 1, 22);   /* photos drift for ever, like the gallery */
+
+function revLayout(anim){
+  var c = rCd.firstElementChild; if(!c) return;
+  var cw = c.offsetWidth + 24;
+  rCd.style.transition = anim ? '' : 'none';
+  rCd.style.transform = 'translate3d('+(-rIdx*cw)+'px,0,0)';
+  rDotEls.forEach(function(d,j){ d.classList.toggle('on', j === ((rIdx%N)+N)%N) });
+}
+function revGo(d){
+  if(rLock) return; rLock = true;
+  rIdx += d; revLayout(true);
+  setTimeout(function(){
+    if(rIdx >= N*2 || rIdx < N){ rIdx = ((rIdx%N)+N)%N + N; revLayout(false); }
+    rLock = false;
+  }, 1080);
+}
+$('#revNext').addEventListener('click', function(){ revGo(1); rAuto = 0; });
+$('#revPrev').addEventListener('click', function(){ revGo(-1); rAuto = 0; });
+rDotEls.forEach(function(d,j){ d.addEventListener('click', function(){
+  var cur = ((rIdx%N)+N)%N, diff = j-cur;
+  if(diff) revGo(diff); rAuto = 0;
+});});
+(function(){
+  var view = $('#revView'), sx = 0, drag = false;
+  view.addEventListener('pointerdown', function(e){ drag = true; sx = e.clientX; });
+  view.addEventListener('pointerup', function(e){
+    if(!drag) return; drag = false;
+    var dx = e.clientX - sx;
+    if(Math.abs(dx) > 60){ revGo(dx < 0 ? 1 : -1); rAuto = 0; }
+  });
+  view.addEventListener('pointercancel', function(){ drag = false });
+  view.addEventListener('pointerenter', function(){ rHover = true; revPhotoMq.target = .18 });
+  view.addEventListener('pointerleave', function(){ rHover = false; revPhotoMq.target = 1 });
+})();
+addEventListener('resize', function(){ revLayout(false); mqs.forEach(function(m){m.measure()}); revPhotoMq.measure(); });
+revLayout(false);
+
+/* ═══════════ SEO ACCORDION ═══════════ */
+(function(){
+  var body = $('#seoBody'), inner = $('#seoInner'), tg = $('#seoTg'), wrap = $('#seoWrap'),
+      lbl = $('span', tg), open = false;
+  tg.addEventListener('click', function(){
+    open = !open;
+    wrap.classList.toggle('seo-open', open);
+    body.style.height = open ? inner.scrollHeight + 'px' : '171px';
+    lbl.textContent = open ? 'Свернуть' : 'Читать полностью';
+  });
+})();
+
+/* ═══════════ MODALS ═══════════ */
+var modRoom = $('#modRoom'), modGal = $('#modGal'), curGal = [], curGalI = 0, curRoom = 0;
+function openMod(m){
+  m.classList.add('open'); document.body.classList.add('locked');
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ m.classList.add('in') }) });
+}
+function closeMod(m){
+  m.classList.remove('in');
+  setTimeout(function(){
+    m.classList.remove('open');
+    if(!$('.mod.open')) document.body.classList.remove('locked');
+  }, 420);
+}
+$$('[data-close]').forEach(function(el){ el.addEventListener('click', function(){ closeMod(el.closest('.mod')) }) });
+
+function openRoom(i){
+  curRoom = i; var r = ROOMS[i];
+  $('#rdTitle').textContent = r.name;
+  $('#rdTags').innerHTML = '<span class="tag">'+r.area+' м<sup>2</sup></span><span class="tag">'+r.guests+'</span>';
+  $('#rdRent').innerHTML  = r.rent+' <span>₽/час</span>';
+  $('#rdGuest').innerHTML = r.guest+' <span>₽/час</span>';
+  $('#rdThumbs').innerHTML = r.slides.map(function(s,j){
+    return '<div class="t'+(j?'':' on')+'" data-rd="'+j+'" style="background-image:'+img(s)+'"></div>';
+  }).join('');
+  setRdBg(0);
+  openMod(modRoom);
+}
+function setRdBg(j){
+  var r = ROOMS[curRoom];
+  $('#rdBg').style.backgroundImage = img(r.slides[j]);
+  $$('#rdThumbs .t').forEach(function(t,k){ t.classList.toggle('on', k===j) });
+  $('#rdBg').dataset.j = j;
+}
+$('#rdThumbs').addEventListener('click', function(e){
+  var t = e.target.closest('[data-rd]'); if(t) setRdBg(+t.dataset.rd);
+});
+$('#rdExp').addEventListener('click', function(){
+  openGal(ROOMS[curRoom].slides, +($('#rdBg').dataset.j||0));
+});
+stack.addEventListener('click', function(e){
+  var b = e.target.closest('[data-room-open]'); if(b){ openRoom(+b.dataset.roomOpen); return; }
+  var z = e.target.closest('[data-zoom]');
+  if(z){ var i = +z.dataset.zoom; openGal(ROOMS[i].slides, sliders[i].i); }
+});
+
+function openGal(list, i){
+  curGal = list; curGalI = i;
+  $('#gfThumbs').innerHTML = list.map(function(s,j){
+    return '<div class="t" data-gf="'+j+'" style="background-image:'+img(s)+'"></div>';
+  }).join('');
+  paintGal();
+  openMod(modGal);
+}
+function paintGal(){
+  $('#gfBg').style.backgroundImage = img(curGal[curGalI]);
+  $$('#gfThumbs .t').forEach(function(t,k){ t.classList.toggle('on', k===curGalI) });
+}
+function galStep(d){ curGalI = (curGalI+d+curGal.length)%curGal.length; paintGal(); }
+$('#gfPrev').addEventListener('click', function(){ galStep(-1) });
+$('#gfNext').addEventListener('click', function(){ galStep(1) });
+$('#gfThumbs').addEventListener('click', function(e){
+  var t = e.target.closest('[data-gf]'); if(t){ curGalI = +t.dataset.gf; paintGal(); }
+});
+$('#mq').addEventListener('click', function(e){
+  var p = e.target.closest('[data-gal]'); if(p) openGal(GAL_ALL, +p.dataset.gal);
+});
+addEventListener('keydown', function(e){
+  var open = $('.mod.open'); if(!open) return;
+  if(e.key === 'Escape') closeMod(open);
+  if(open === modGal){ if(e.key==='ArrowRight') galStep(1); if(e.key==='ArrowLeft') galStep(-1); }
+});
+
+/* ═══════════ MAP — real OSM tiles for Колокольников пер., 22 с5 ═══════════ */
+var MapUI = (function(){
+  var LV = [ {img:'mapz15', w:2048, h:1280, fx:0.512821, fy:0.480431},
+             {img:'mapz17', w:2048, h:1280, fx:0.551285, fy:0.521726} ];
+  var view = $('#mapview'), layer = $('#maplayer'), pin = $('#mapPin');
+  var lv = 0, ox = 0, oy = 0, vw = 0, vh = 0, drag = false, px = 0, py = 0;
+
+  function L(){ return LV[lv] }
+  function clampOff(){
+    ox = clamp(ox, vw - L().w, 0);
+    oy = clamp(oy, vh - L().h, 0);
+  }
+  function paint(){
+    layer.style.width = L().w+'px'; layer.style.height = L().h+'px';
+    layer.style.backgroundImage = img(L().img);
+    layer.style.transform = 'translate3d('+ox+'px,'+oy+'px,0)';
+    pin.style.left = (ox + L().fx*L().w)+'px';
+    pin.style.top  = (oy + L().fy*L().h)+'px';
+  }
+  function centre(){
+    var r = view.getBoundingClientRect(); vw = r.width; vh = r.height;
+    if(!vw) return;
+    ox = vw*0.579 - L().fx*L().w;     /* pin lands where Figma puts it */
+    oy = vh*0.339 - L().fy*L().h;
+    clampOff(); paint();
+  }
+  view.addEventListener('pointerdown', function(e){
+    drag = true; px = e.clientX; py = e.clientY;
+    view.classList.add('drag'); view.setPointerCapture(e.pointerId);
+  });
+  view.addEventListener('pointermove', function(e){
+    if(!drag) return;
+    ox += e.clientX - px; oy += e.clientY - py; px = e.clientX; py = e.clientY;
+    clampOff(); paint();
+  });
+  function stop(){ drag = false; view.classList.remove('drag') }
+  view.addEventListener('pointerup', stop);
+  view.addEventListener('pointercancel', stop);
+  function zoom(d){
+    var n = clamp(lv+d, 0, LV.length-1); if(n===lv) return;
+    /* keep the club pinned where it currently sits */
+    var cx = ox + L().fx*L().w, cy = oy + L().fy*L().h;
+    lv = n;
+    ox = cx - L().fx*L().w; oy = cy - L().fy*L().h;
+    clampOff(); paint();
+  }
+  $('#mapIn').addEventListener('click', function(){ zoom(1) });
+  $('#mapOut').addEventListener('click', function(){ zoom(-1) });
+  addEventListener('resize', centre);
+  centre(); setTimeout(centre, 120);
+  return {centre:centre};
+})();
+
+/* ═══════════ MAIN LOOP ═══════════ */
+var prog = $('#prog'), last = performance.now(), isMobile = innerWidth <= 860;
+var pars = $$('.par');
+addEventListener('resize', function(){ isMobile = innerWidth <= 860; });
+
+function frame(now){
+  var dt = Math.min(now - last, 60); last = now;
+  var y = scrollY || pageYOffset, vh = innerHeight;
+
+  var max = document.documentElement.scrollHeight - vh;
+  prog.style.transform = 'scaleX('+(max>0 ? clamp(y/max,0,1) : 0)+')';
+
+  hdr.classList.toggle('scrolled', y > 40);
+  if(y > 520 && y > lastY + 4) hdr.classList.add('hide');
+  else if(y < lastY - 4 || y < 300) hdr.classList.remove('hide');
+  lastY = y;
+
+  /* hero: only the photo layer moves — never an ancestor of frosted glass */
+  if(y < vh*1.2){
+    var hp = clamp(y/vh,0,1);
+    kbs.style.transform = 'translate3d(0,'+(hp*90)+'px,0)';
+    heroH1.style.opacity = metrics.style.opacity = String(clamp(1-hp*1.45,0,1));
+    heroH1.style.transform = metrics.style.transform = 'translate3d(0,'+(hp*54)+'px,0)';
+  }
+
+  if(!isMobile){
+    var ftr = fTrack.getBoundingClientRect(), span = ftr.height - vh;
+    if(span > 0){
+      var p = clamp((-ftr.top)/span, 0, .9999) * fN;
+      featSet(Math.floor(p), p - Math.floor(p));
+    }
+  } else if(!RM){
+    fAuto += dt; var D = 5200;
+    if(fAuto >= D*fN) fAuto = 0;
+    featSet(Math.floor(fAuto/D), (fAuto % D)/D);
+  }
+  fFx.tick(dt);
+
+  for(var i=0;i<slots.length;i++){
+    var cov = 0;
+    if(!isMobile && i < slots.length-1){
+      var a = slots[i].getBoundingClientRect(), b = slots[i+1].getBoundingClientRect();
+      cov = clamp((a.bottom - b.top) / a.height, 0, 1);
+    }
+    var e = cov*cov*(3-2*cov);
+    cards[i].style.transform = 'scale('+(1-.10*e)+') translate3d(0,'+(e*10)+'px,0)';
+    dims[i].style.opacity = String(e*.55);
+  }
+
+  for(var k=0;k<pars.length;k++){
+    var pr = pars[k], rb = pr.getBoundingClientRect();
+    if(rb.bottom > 0 && rb.top < vh){
+      var t = (rb.top + rb.height/2 - vh/2) / vh;
+      pr.style.transform = 'translate3d(0,'+(t * -parseFloat(pr.dataset.par)) + 'px,0)';
+    }
+  }
+
+  for(var s=0;s<sliders.length;s++) sliders[s].tick(dt);
+  for(var m=0;m<mqs.length;m++) mqs[m].tick(dt);
+  revPhotoMq.tick(dt);
+  for(var q=0;q<tilts.length;q++) tilts[q]();
+
+  if(!rHover && !RM && !$('.mod.open')){
+    rAuto += dt;
+    if(rAuto > 6500){ rAuto = 0; revGo(1); }
+  }
+  requestAnimationFrame(frame);
+}
+addEventListener('resize', function(){
+  fFx.resize(); sliders.forEach(function(s){ s.fx.resize() });
+});
+setTimeout(function(){ fFx.resize(); sliders.forEach(function(s){ s.fx.resize() }); }, 60);
+watch(document);
+requestAnimationFrame(frame);
+})();
+</script>
