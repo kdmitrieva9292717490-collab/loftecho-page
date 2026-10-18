@@ -145,17 +145,17 @@ section{position:relative;scroll-margin-top:112px}
 .nl>span::after{display:none}
 .nl svg{flex:none;width:16px;height:16px;transition:transform .4s var(--ease)}
 .dd{position:relative;display:flex;align-items:center}
-.dd:hover .nl svg{transform:rotate(180deg)}
+.dd.open .nl svg{transform:rotate(180deg)}
 /* Figma Dropdown Menu: 253 шириной, поля 16 сверху/снизу, скруглены только нижние углы 16,
    стекло как у шапки (чёрный 10%, обводка 15%, blur 20 → CSS 10) */
 .ddm{position:absolute;top:calc(100% + 18px);left:-12px;width:253px;border-radius:0 0 16px 16px;
   padding:16px 0;background:rgba(5,5,5,.10);border:1px solid var(--w15);
   -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);overflow:hidden;opacity:0;visibility:hidden;transform:translateY(-8px) scale(.98);
   transform-origin:50% 0;transition:opacity .35s var(--ease),transform .45s var(--ease),visibility .35s}
-.dd:hover .ddm,.dd:focus-within .ddm{opacity:1;visibility:visible;transform:none}
+.dd.open .ddm{opacity:1;visibility:visible;transform:none}   /* .open ставит скрипт: наведение, щелчок, Esc */
 .ddm a{display:flex;align-items:center;padding:8px 16px;font-size:18px;white-space:nowrap;position:relative;
   opacity:0;transform:translateX(-10px);transition:opacity .4s var(--ease),transform .4s var(--ease),background-color .25s}
-.dd:hover .ddm a,.dd:focus-within .ddm a{opacity:1;transform:none;transition-delay:calc(var(--i)*32ms + 60ms)}
+.dd.open .ddm a{opacity:1;transform:none;transition-delay:calc(var(--i)*32ms + 60ms)}
 .ddm a:hover{background:var(--w15)}   /* UI Kit → Menu Item: Hover */
 .hdr .ci{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
 .hdr .ci small{font-size:12px;opacity:.7;line-height:normal}

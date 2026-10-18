@@ -18,6 +18,21 @@ function src(name){
   return (srcCache[name] = m ? m[1] : '');
 }
 
+/* ═══════════ HEADER DROPDOWN ═══════════
+   наведение открывает, уход курсора закрывает; щелчок по кнопке переключает;
+   щелчок мимо, Esc, выбор пункта — закрывают */
+$$('.dd').forEach(function(dd){
+  var btn = $('.nl', dd), t = 0;
+  function set(on){ clearTimeout(t); dd.classList.toggle('open', on); btn.setAttribute('aria-expanded', on) }
+  btn.setAttribute('aria-haspopup', 'true'); btn.setAttribute('aria-expanded', 'false');
+  btn.addEventListener('click', function(e){ e.preventDefault(); set(!dd.classList.contains('open')) });
+  dd.addEventListener('pointerenter', function(e){ if(e.pointerType === 'mouse') set(true) });
+  dd.addEventListener('pointerleave', function(e){ if(e.pointerType === 'mouse'){ clearTimeout(t); t = setTimeout(function(){ set(false) }, 180) } });
+  $$('.ddm a', dd).forEach(function(a){ a.addEventListener('click', function(){ set(false) }) });
+  document.addEventListener('click', function(e){ if(!dd.contains(e.target)) set(false) });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && dd.classList.contains('open')){ set(false); btn.focus() } });
+});
+
 /* ═══════════ DATA ═══════════ */
 var ROOMS = [
  {name:'Зал космос',  no:'Зал № 1', area:'21', guests:'До 13 гостей', guest:'от 650', rent:'от 3 800',

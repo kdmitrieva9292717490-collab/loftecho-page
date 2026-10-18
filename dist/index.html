@@ -152,17 +152,17 @@ section{position:relative;scroll-margin-top:112px}
 .nl>span::after{display:none}
 .nl svg{flex:none;width:16px;height:16px;transition:transform .4s var(--ease)}
 .dd{position:relative;display:flex;align-items:center}
-.dd:hover .nl svg{transform:rotate(180deg)}
+.dd.open .nl svg{transform:rotate(180deg)}
 /* Figma Dropdown Menu: 253 шириной, поля 16 сверху/снизу, скруглены только нижние углы 16,
    стекло как у шапки (чёрный 10%, обводка 15%, blur 20 → CSS 10) */
 .ddm{position:absolute;top:calc(100% + 18px);left:-12px;width:253px;border-radius:0 0 16px 16px;
   padding:16px 0;background:rgba(5,5,5,.10);border:1px solid var(--w15);
   -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);overflow:hidden;opacity:0;visibility:hidden;transform:translateY(-8px) scale(.98);
   transform-origin:50% 0;transition:opacity .35s var(--ease),transform .45s var(--ease),visibility .35s}
-.dd:hover .ddm,.dd:focus-within .ddm{opacity:1;visibility:visible;transform:none}
+.dd.open .ddm{opacity:1;visibility:visible;transform:none}   /* .open ставит скрипт: наведение, щелчок, Esc */
 .ddm a{display:flex;align-items:center;padding:8px 16px;font-size:18px;white-space:nowrap;position:relative;
   opacity:0;transform:translateX(-10px);transition:opacity .4s var(--ease),transform .4s var(--ease),background-color .25s}
-.dd:hover .ddm a,.dd:focus-within .ddm a{opacity:1;transform:none;transition-delay:calc(var(--i)*32ms + 60ms)}
+.dd.open .ddm a{opacity:1;transform:none;transition-delay:calc(var(--i)*32ms + 60ms)}
 .ddm a:hover{background:var(--w15)}   /* UI Kit → Menu Item: Hover */
 .hdr .ci{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
 .hdr .ci small{font-size:12px;opacity:.7;line-height:normal}
@@ -1081,6 +1081,21 @@ function src(name){
   var m = v.match(/url\((?:"|')?(.*?)(?:"|')?\)/);
   return (srcCache[name] = m ? m[1] : '');
 }
+
+/* ═══════════ HEADER DROPDOWN ═══════════
+   наведение открывает, уход курсора закрывает; щелчок по кнопке переключает;
+   щелчок мимо, Esc, выбор пункта — закрывают */
+$$('.dd').forEach(function(dd){
+  var btn = $('.nl', dd), t = 0;
+  function set(on){ clearTimeout(t); dd.classList.toggle('open', on); btn.setAttribute('aria-expanded', on) }
+  btn.setAttribute('aria-haspopup', 'true'); btn.setAttribute('aria-expanded', 'false');
+  btn.addEventListener('click', function(e){ e.preventDefault(); set(!dd.classList.contains('open')) });
+  dd.addEventListener('pointerenter', function(e){ if(e.pointerType === 'mouse') set(true) });
+  dd.addEventListener('pointerleave', function(e){ if(e.pointerType === 'mouse'){ clearTimeout(t); t = setTimeout(function(){ set(false) }, 180) } });
+  $$('.ddm a', dd).forEach(function(a){ a.addEventListener('click', function(){ set(false) }) });
+  document.addEventListener('click', function(e){ if(!dd.contains(e.target)) set(false) });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && dd.classList.contains('open')){ set(false); btn.focus() } });
+});
 
 /* ═══════════ DATA ═══════════ */
 var ROOMS = [
