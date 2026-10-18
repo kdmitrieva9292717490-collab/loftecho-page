@@ -204,11 +204,12 @@ section{position:relative;scroll-margin-top:112px}
    12 с = 26.667% цикла, 3 с = 6.667%. Лава стартует с −3 с — при загрузке уже видна целиком. */
 .kb{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;will-change:transform,opacity;
   transform:scale(1.15);animation:kb 45s infinite linear}
-.kb:nth-child(1){background-image:var(--i-hero-lava);animation-delay:-3s}
+/* Лава, Тропики, Эйфория подняты по её просьбе: 75% по вертикали ≈ на 40 px выше центра (запас фото ~164 px на 1600×900) */
+.kb:nth-child(1){background-image:var(--i-hero-lava);background-position:50% 75%;animation-delay:-3s}
 .kb:nth-child(2){background-image:var(--i-kosmos);background-position:50% 61%;animation-delay:6s}   /* в ролике Космос на 20 px выше центра */
-.kb:nth-child(3){background-image:var(--i-hero-tropiki);animation-delay:15s}
+.kb:nth-child(3){background-image:var(--i-hero-tropiki);background-position:50% 75%;animation-delay:15s}
 .kb:nth-child(4){background-image:var(--i-laguna);animation-delay:24s}
-.kb:nth-child(5){background-image:var(--i-euphoria);animation-delay:33s}
+.kb:nth-child(5){background-image:var(--i-euphoria);background-position:50% 75%;animation-delay:33s}
 @keyframes kb{
   0%      {opacity:0;transform:scale(1.15)}
   6.667%  {opacity:1}
