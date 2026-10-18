@@ -549,6 +549,7 @@ footer{position:relative;display:flex;flex-direction:column;align-items:center;
   .rd-prices{gap:8px}
   .rd-p{display:flex;flex-direction:column;gap:24px}
   .rd-p .k{font-size:20px;font-weight:600;line-height:normal;margin:0}
+  .rd-badge{line-height:normal}   /* Figma Badge: R16 auto → высота 32 */
   .rd-rows{display:flex;flex-direction:column;gap:16px}
   .rd-row + .rd-row{margin-top:0}
   .rd-row{display:flex;flex-direction:column;gap:8px}
@@ -556,16 +557,16 @@ footer{position:relative;display:flex;flex-direction:column;align-items:center;
   .rd-row .v{display:flex;align-items:baseline;gap:12px;color:var(--yellow);font-size:40px;line-height:28px}
   .rd-row .v span{font-size:inherit}
   .rd-row .sfx{display:flex;align-items:baseline;gap:1px}
-  .rd-row .per{font-family:var(--f-b);font-size:18px;font-weight:400;color:var(--w60);text-transform:none}
+  .rd-row .v .per{font-family:var(--f-b);font-size:18px;font-weight:400;color:var(--w60);text-transform:none}   /* Figma: R18, 60% */
   .rd-book{gap:8px;align-items:stretch;text-align:center;margin-top:-8px}   /* Figma Booking Card: цены и кнопка через 8, не 16 */
   .rd-book small{font-size:16px}
   .rd-eq{flex:1;display:flex;flex-direction:column;gap:32px;font-size:20px;font-weight:600;line-height:normal;color:var(--white)}
   .rd-feat{display:flex;flex-direction:column;gap:16px}
-  .rd-eq b{font-size:18px;margin:0}
+  .rd-eq b{font-size:18px;margin:0;color:rgba(253,253,253,.36)}   /* Figma: цвет 60% × прозрачность слоя 60% */
   .rd-eq ul{margin:0;padding-left:28px;gap:8px}
   .rd-extra{display:flex;flex-direction:column;gap:16px}
   .rd-extra p{color:var(--w60)}
-  .rd-extra small{margin:0;font-size:16px}
+  .rd-extra small{margin:0;font-size:16px;font-weight:400}   /* Figma: Caption R16 */
   /* Gallery Tools: справа снизу 40/40, поля 8; миниатюры 64×64 r4 через 8; неактивные — 80% + затемнение 30% */
   .rd-tools{position:absolute;right:40px;bottom:40px;z-index:5;display:flex;align-items:center;gap:32px;padding:8px;border-radius:8px}
   .rd-tools .rd-thumbs{position:static;gap:8px}
@@ -1620,7 +1621,8 @@ $$('[data-close]').forEach(function(el){ el.addEventListener('click', function()
 function openRoom(i){
   curRoom = i; var r = ROOMS[i];
   $('#rdTitle').textContent = r.name;
-  $('#rdTags').innerHTML = '<span class="tag">'+r.area+' м<sup>2</sup></span><span class="tag">'+r.guests+'</span>'+
+  /* «м²» символом U+00B2: в Figma «2» с функцией SUPS, в веб-версии Onest её нет, а глиф ² есть */
+  $('#rdTags').innerHTML = '<span class="tag">'+r.area+'&nbsp;м²</span><span class="tag">'+r.guests+'</span>'+
                            '<span class="tag">Экран '+r.screen+' м</span>';
   /* цены как в Figma: сумма 40 жёлтым, «₽» 40 жёлтым, «/ Час» 18 серым */
   function row(t, v){

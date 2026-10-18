@@ -458,7 +458,8 @@ $$('[data-close]').forEach(function(el){ el.addEventListener('click', function()
 function openRoom(i){
   curRoom = i; var r = ROOMS[i];
   $('#rdTitle').textContent = r.name;
-  $('#rdTags').innerHTML = '<span class="tag">'+r.area+' м<sup>2</sup></span><span class="tag">'+r.guests+'</span>'+
+  /* «м²» символом U+00B2: в Figma «2» с функцией SUPS, в веб-версии Onest её нет, а глиф ² есть */
+  $('#rdTags').innerHTML = '<span class="tag">'+r.area+'&nbsp;м²</span><span class="tag">'+r.guests+'</span>'+
                            '<span class="tag">Экран '+r.screen+' м</span>';
   /* цены как в Figma: сумма 40 жёлтым, «₽» 40 жёлтым, «/ Час» 18 серым */
   function row(t, v){
