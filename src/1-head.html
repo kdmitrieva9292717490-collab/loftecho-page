@@ -242,14 +242,17 @@ section{position:relative;scroll-margin-top:112px}
 /* ══════════════ FEATURES ══════════════ */
 .feats-track{position:relative;height:280vh}
 .feats-sticky{position:sticky;top:7vh;height:86vh;min-height:430px;max-height:880px;display:flex;align-items:center}
-.fg{position:relative;width:100%;height:100%;border-radius:16px;border:1px solid var(--w15);overflow:hidden;background:#0b0b0c}
+/* Figma Features Grid: 1520×622 → пропорции 1520/622, по высоте не больше липкой области */
+.fg{position:relative;width:100%;aspect-ratio:1520/622;max-height:100%;border-radius:16px;border:1px solid var(--w15);overflow:hidden;background:#0b0b0c}
 .fg-media{position:absolute;inset:0}
 .fg-media canvas{position:absolute;inset:0;width:100%;height:100%}
 .fg-img{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity .9s var(--ease)}
 .fg-img.on{opacity:1}
-.fg-shade{position:absolute;inset:0;background:linear-gradient(90deg,var(--black) 0%,rgba(5,5,5,.72) 22%,rgba(5,5,5,0) 44%)}
+/* Figma Gradient Overlay (замер по пикселям макета): слева −74% яркости, к 30% ширины сходит на нет */
+.fg-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,5,5,.74) 0%,rgba(5,5,5,0) 30%)}
+@media (min-width:861px){ .fg-shade2{display:none} }   /* нижнего затемнения в макете нет */
 .fg-shade2{position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(to top,rgba(5,5,5,.92),transparent)}
-.fg-card{position:absolute;left:40px;top:40px;width:485px;min-height:303px;padding:24px;border-radius:14px;overflow:hidden}
+.fg-card{position:absolute;left:40px;top:40px;width:485px;min-height:303px;padding:24px;border-radius:10px;overflow:hidden}
 .fg-list{display:grid}
 .fg-list>div{grid-area:1/1;display:flex;flex-direction:column;gap:16px;opacity:0;transform:translateY(18px);
   pointer-events:none;transition:opacity .55s var(--ease),transform .7s var(--ease)}
@@ -257,10 +260,11 @@ section{position:relative;scroll-margin-top:112px}
 .fi{display:flex;flex-direction:column;gap:5px;font-size:clamp(16px,1.25vw,20px);line-height:normal}
 .fi b{font-weight:400;color:var(--white)}
 .fi span{color:var(--w60)}
-.fg-cap{position:absolute;left:39px;right:39px;bottom:78px;height:1.2em;display:grid}
+/* Figma: заголовок низом на 62 от края, полоски на 40 — между ними 20 */
+.fg-cap{position:absolute;left:40px;right:40px;bottom:62px;height:1.15em;display:grid}
 .fg-cap span{grid-area:1/1;opacity:0;transform:translateY(14px);transition:opacity .5s var(--ease),transform .6s var(--ease)}
 .fg-cap span.on{opacity:1;transform:none}
-.fg-bars{position:absolute;left:39px;right:39px;bottom:40px;display:flex;gap:8px}
+.fg-bars{position:absolute;left:40px;right:40px;bottom:40px;display:flex;gap:8px}
 .bar{flex:1;height:2px;border-radius:10px;background:var(--w30);overflow:hidden;position:relative}
 .bar i{position:absolute;inset:0;background:var(--white);transform-origin:0 50%;transform:scaleX(0)}
 
@@ -543,7 +547,7 @@ footer{position:relative;display:flex;flex-direction:column;align-items:center;
   .mopen .mnav a{opacity:1;transform:none;transition-delay:calc(var(--i)*45ms + 120ms)}
   .mnav .mfoot{margin-top:28px;display:flex;flex-direction:column;gap:14px;font-family:var(--f-b);text-transform:none}
   .combos{grid-template-columns:repeat(2,1fr);gap:16px}
-  .fg{height:auto;display:flex;flex-direction:column}
+  .fg{height:auto;aspect-ratio:auto;max-height:none;display:flex;flex-direction:column}
   .feats-sticky{position:static;height:auto;max-height:none;display:block}
   .fg-media{position:relative;aspect-ratio:16/10;overflow:hidden}
   .fg-card{position:relative;left:auto;top:auto;width:auto;margin:16px}
