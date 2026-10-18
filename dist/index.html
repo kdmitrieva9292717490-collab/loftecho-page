@@ -164,13 +164,15 @@ section{position:relative;scroll-margin-top:112px}
    справа контакты —24— соцкнопки —16— кнопка */
 @media (min-width:1081px){
   .pill{height:80px}
-  .pill:not(.r){width:578px;justify-content:flex-end;position:relative}
+  .pill:not(.r){width:578px;min-width:max-content;padding-left:141px;justify-content:flex-end;position:relative}
   .pill:not(.r) .brand{position:absolute;left:24px;top:6px;width:90px;height:68px}
   .pill.r{gap:24px}
   .pill.r .soc{margin-right:-8px}   /* 24 − 8 = 16 до кнопки; когда .soc скрыт (≤1300), правило не действует */
   .dd .nl{padding:0}
   .ci .nl{height:auto}
 }
+/* 1081–1280: две плашки шапки целиком не помещаются (578+16+605) — прячем только телефон с адресом */
+@media (min-width:1081px) and (max-width:1280px){ .hdr .ci{display:none} }
 .burger{display:none;position:relative;width:40px;height:40px;border-radius:10px;pointer-events:auto}
 .burger span{position:absolute;left:11px;width:18px;height:1.5px;border-radius:2px;background:#fff;z-index:3;
   transition:transform .4s var(--ease),opacity .3s}
