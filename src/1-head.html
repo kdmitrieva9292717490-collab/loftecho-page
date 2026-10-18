@@ -572,6 +572,39 @@ footer{position:relative;display:flex;flex-direction:column;align-items:center;
   .gf-nav{display:none}
 }
 
+/* ══════════════ PACKAGE PAGES (Figma: Page/Package Details ×9) ══════════════ */
+/* первый экран: фото (верх кадра) + заголовок 80 по центру, низ заголовка на 90 от края */
+.pk-hero{justify-content:flex-end;padding-bottom:90px}
+.pk-hero .kbs{background:var(--i-pkg-hero) center top/cover no-repeat}
+.pk-hero .kbs::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(5,5,5,.55),rgba(5,5,5,0) 45%)}
+.pk-hero h1{position:relative;z-index:2;max-width:1212px;margin-inline:auto;text-align:center;
+  font-size:clamp(36px,5vw,80px);line-height:1.05}
+.d em,.sub em{font-style:normal;color:var(--yellow)}
+/* раздел цен: заголовок → 80 → карточки → 40 → общий блок */
+.pk-grid{display:flex;justify-content:center;align-items:flex-start;gap:24px;margin-top:80px}
+.pk-card{flex:0 1 490px;min-width:0;padding:40px 24px;border-radius:16px;border:1px solid var(--w15);
+  display:flex;flex-direction:column;gap:40px}
+.pk-card.l1{background:#0F0F10}.pk-card.l2{background:#1D1503}.pk-card.l3{background:#2B1F03}
+.pk-head{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+.pk-head h3{font-size:40px;line-height:normal}
+.pk-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.pk-tags .tag{border-radius:4px;padding:6px 12px;font-size:18px;line-height:normal}
+.pk-prices{display:grid;grid-template-columns:1fr 1fr;column-gap:36px}
+.pk-prices.one{grid-template-columns:1fr}
+.pk-price .t{font-size:16px;color:var(--w60);line-height:normal;margin-bottom:8px}
+.pk-price .row{display:flex;align-items:flex-end;gap:8px;height:28px;white-space:nowrap}
+.pk-price b{font-size:40px;line-height:28px;color:var(--yellow);font-weight:700}
+.pk-price s{font-size:24px;line-height:17px;color:var(--w60);font-weight:700}
+.pk-card .btn{width:100%}
+.pk-list h4{margin:0 0 24px;font-size:20px;font-weight:400;color:var(--w60);line-height:normal}
+.pk-list ul{margin:0;padding-left:26px;display:flex;flex-direction:column;gap:16px;font-size:20px;line-height:normal}
+.pk-list li.ys::marker{color:var(--yellow)}   /* пункт начинается с выделения — маркер тоже жёлтый */
+.pk-common{margin-top:40px;display:flex;flex-direction:column;gap:16px}
+.pk-common p{margin:0;max-width:488px;font-size:20px;font-weight:600;line-height:normal}
+.pk-common h4{margin:0;font-size:20px;font-weight:600;line-height:normal}
+.pk-common ul{margin:0;padding-left:26px;display:flex;flex-direction:column;gap:8px;max-width:760px;
+  font-size:18px;color:var(--w60);line-height:normal}
+
 /* ══════════════ RESPONSIVE ══════════════ */
 @media (max-width:1300px){
   .fg-card{width:min(440px,46%)}
@@ -629,6 +662,8 @@ footer{position:relative;display:flex;flex-direction:column;align-items:center;
   .pin{left:70%;top:16%}
   .mod-in{aspect-ratio:auto;height:100%;max-height:none;border-radius:16px}
   .rd-panel{position:absolute;inset:auto 12px 12px 12px;width:auto;max-height:62%}
+  .pk-grid{flex-direction:column;align-items:stretch}   /* новые страницы пакетов: временно столбиком до мобильной вёрстки */
+  .pk-card{flex:none}
   .rd-thumbs{display:none}
 }
 @media (max-width:620px){

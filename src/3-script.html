@@ -53,11 +53,11 @@ var ROOMS = [
   slides:['r-euphoria-1','r-euphoria-2','r-euphoria-3']}
 ];
 var COMBOS = [
- {t:'День рождения в караоке', i:'c1'}, {t:'Романтическое свидание', i:'c2'},
- {t:'Караоке для друзей',      i:'c3'}, {t:'Девичник',               i:'c4'},
- {t:'Корпоратив',              i:'c5'}, {t:'Лаундж-комбо в караоке',  i:'c6'},
- {t:'Кино-комбо в караоке',    i:'c1'}, {t:'Последний звонок',        i:'c8'},
- {t:'Детский день рождения',   i:'c9'}
+ {t:'День рождения в караоке', i:'c1', u:'den-rozhdeniya'}, {t:'Романтическое свидание', i:'c2', u:'romanticheskoe-svidanie'},
+ {t:'Караоке для друзей',      i:'c3', u:'vecherinka'},     {t:'Девичник',               i:'c4', u:'devichnik'},
+ {t:'Корпоратив',              i:'c5', u:'korporativ'},     {t:'Лаундж-комбо в караоке',  i:'c6', u:'lounge'},
+ {t:'Кино-комбо в караоке',    i:'c1', u:'kino'},           {t:'Последний звонок',        i:'c8', u:'posledniy-zvonok'},
+ {t:'Детский день рождения',   i:'c9', u:'detskiy-den-rozhdeniya'}
 ];
 var GAL_ROWS = [
  ['g1','g2','g3','g4','g5'],
@@ -266,8 +266,9 @@ function featSet(i, frac){
 featSet(0,0);
 
 /* ═══════════ ROOMS ═══════════ */
+/* страницы пакетов собираются без разделов залов, «Комбо» и галереи — каждый блок ниже проверяет, есть ли он на странице */
 var stack = $('#roomsStack');
-ROOMS.forEach(function(r, idx){
+if(stack) ROOMS.forEach(function(r, idx){
   var slot = document.createElement('div');
   slot.className = 'room-slot';
   slot.innerHTML =
@@ -295,7 +296,7 @@ ROOMS.forEach(function(r, idx){
    '</article>';
   stack.appendChild(slot);
 });
-var slots = $$('.room-slot', stack), cards = $$('.room', stack), dims = $$('.room-dim', stack);
+var slots = stack ? $$('.room-slot', stack) : [], cards = stack ? $$('.room', stack) : [], dims = stack ? $$('.room-dim', stack) : [];
 
 function Slider(root, dur){
   this.bars = $$('.bar', root); this.slides = $$('.rp', root);
@@ -323,11 +324,11 @@ Slider.prototype.tick = function(dt){
   if(this.t >= this.dur){ this.t = 0; this.i = (this.i+1)%this.n; this.fx.set(this.i); }
   this.paint();
 };
-var sliders = $$('.room-photo', stack).map(function(el){ return new Slider(el, 5200) });
+var sliders = stack ? $$('.room-photo', stack).map(function(el){ return new Slider(el, 5200) }) : [];
 
 /* ═══════════ COMBOS (Card/Promo) ═══════════ */
-$('#combosGrid').innerHTML = COMBOS.map(function(c,j){
-  return '<a class="combo up" href="#combos" style="--d:'+(j%3*80)+'ms">'+
+if($('#combosGrid')) $('#combosGrid').innerHTML = COMBOS.map(function(c,j){
+  return '<a class="combo up" href="paket-'+c.u+'.html" style="--d:'+(j%3*80)+'ms">'+
     '<div class="combo-img" style="background-image:'+img(c.i)+'"></div>'+
     '<div class="combo-veil"></div>'+
     '<div class="combo-b"><div class="combo-t d">'+c.t+'</div></div>'+
@@ -364,16 +365,19 @@ Marquee.prototype.tick = function(dt){
   this.el.style.transform = 'translate3d('+this.x+'px,0,0)';
 };
 
-$('#mq').innerHTML = GAL_ROWS.map(function(row,ri){
-  var cells = row.concat(row).map(function(g){
-    return '<div class="ph" data-gal="'+GAL_ALL.indexOf(g)+'" style="background-image:'+img(g)+'"></div>';
+var mqEl = $('#mq'), mqs = [];
+if(mqEl){
+  mqEl.innerHTML = GAL_ROWS.map(function(row,ri){
+    var cells = row.concat(row).map(function(g){
+      return '<div class="ph" data-gal="'+GAL_ALL.indexOf(g)+'" style="background-image:'+img(g)+'"></div>';
+    }).join('');
+    return '<div class="mq-row" data-dir="'+(ri===1?-1:1)+'">'+cells+'</div>';
   }).join('');
-  return '<div class="mq-row" data-dir="'+(ri===1?-1:1)+'">'+cells+'</div>';
-}).join('');
-var mqs = $$('.mq-row').map(function(el,i){ return new Marquee(el, +el.dataset.dir, [26,21,24][i]) });
-/* hover slows the whole carousel to 8 % — it never fully stops */
-$('#mq').addEventListener('pointerenter', function(){ mqs.forEach(function(m){ m.target = .08 }) });
-$('#mq').addEventListener('pointerleave', function(){ mqs.forEach(function(m){ m.target = 1 }) });
+  mqs = $$('.mq-row').map(function(el,i){ return new Marquee(el, +el.dataset.dir, [26,21,24][i]) });
+  /* hover slows the whole carousel to 8 % — it never fully stops */
+  mqEl.addEventListener('pointerenter', function(){ mqs.forEach(function(m){ m.target = .08 }) });
+  mqEl.addEventListener('pointerleave', function(){ mqs.forEach(function(m){ m.target = 1 }) });
+}
 
 /* ═══════════ REVIEWS ═══════════ */
 var rPh = $('#revPhotos'), rCd = $('#revCards'), rDots = $('#revDots'),
@@ -486,7 +490,7 @@ $('#rdThumbs').addEventListener('click', function(e){
 $('#rdExp').addEventListener('click', function(){
   openGal(ROOMS[curRoom].slides, +($('#rdBg').dataset.j||0));
 });
-stack.addEventListener('click', function(e){
+if(stack) stack.addEventListener('click', function(e){
   var b = e.target.closest('[data-room-open]'); if(b){ openRoom(+b.dataset.roomOpen); return; }
   var z = e.target.closest('[data-zoom]');
   if(z){ var i = +z.dataset.zoom; openGal(ROOMS[i].slides, sliders[i].i); }
@@ -510,7 +514,7 @@ $('#gfNext').addEventListener('click', function(){ galStep(1) });
 $('#gfThumbs').addEventListener('click', function(e){
   var t = e.target.closest('[data-gf]'); if(t){ curGalI = +t.dataset.gf; paintGal(); }
 });
-$('#mq').addEventListener('click', function(e){
+if(mqEl) mqEl.addEventListener('click', function(e){
   var p = e.target.closest('[data-gal]'); if(p) openGal(GAL_ALL, +p.dataset.gal);
 });
 addEventListener('keydown', function(e){
@@ -590,11 +594,12 @@ function frame(now){
   lastY = y;
 
   /* hero: only the photo layer moves — never an ancestor of frosted glass */
-  if(y < vh*1.2){
+  if(kbs && y < vh*1.2){
     var hp = clamp(y/vh,0,1);
     kbs.style.transform = 'translate3d(0,'+(hp*90)+'px,0)';
-    heroH1.style.opacity = metrics.style.opacity = String(clamp(1-hp*1.45,0,1));
-    heroH1.style.transform = metrics.style.transform = 'translate3d(0,'+(hp*54)+'px,0)';
+    heroH1.style.opacity = String(clamp(1-hp*1.45,0,1));
+    heroH1.style.transform = 'translate3d(0,'+(hp*54)+'px,0)';
+    if(metrics){ metrics.style.opacity = heroH1.style.opacity; metrics.style.transform = heroH1.style.transform; }
   }
 
   if(!isMobile){

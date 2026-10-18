@@ -1,0 +1,1684 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="images.css?v=584c5ff4">
+</head>
+<body style="margin:0">
+<title>Романтическое свидание — ЛофтЭхо</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800;900&family=Roboto+Flex:opsz,wdth,wght,XOPQ,XTRA@8..144,25..151,100..1000,27..175,323..603&display=swap" rel="stylesheet">
+<style>
+/* ══════════════ TOKENS (Figma variables 1:1) ══════════════ */
+@property --wdth { syntax:'<number>'; inherits:true; initial-value:50 }
+
+:root{
+  --black:#050505; --card:#0F0F10; --white:#FDFDFD;
+  --yellow:#FBC34A; --yellow2:#FBDB4A; --pink:#C50095;
+  --w06:rgba(253,253,253,.06); --w10:rgba(253,253,253,.10);
+  --w15:rgba(253,253,253,.15); --w30:rgba(253,253,253,.30);
+  --w60:rgba(253,253,253,.60); --w80:rgba(253,253,253,.80);
+  --y15:rgba(251,195,74,.15);
+  --f-d:'Roboto Flex','Oswald','Arial Narrow',system-ui,sans-serif;
+  --f-b:'Onest',-apple-system,'Segoe UI',Roboto,system-ui,sans-serif;
+  --pad:clamp(16px,4vw,40px);
+  --gap:clamp(72px,8.7vw,140px);
+  --max:1840px;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --ease2:cubic-bezier(.65,0,.35,1);
+  --glow:0 0 20px #FF3BCF;   /* UI Kit: Drop shadow 0 0, blur 20, #FF3BCF — у всех Hover */
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{ -webkit-text-size-adjust:100%; scroll-behavior:smooth }
+body{
+  margin:0; background:var(--black); color:var(--white);
+  font-family:var(--f-b); font-size:18px; line-height:normal; /* Figma: line height Auto */
+  overflow-x:hidden; -webkit-font-smoothing:antialiased;
+}
+body.locked{ overflow:hidden }
+img,canvas{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+::selection{background:var(--pink);color:#fff}
+:focus-visible{outline:2px solid var(--yellow);outline-offset:3px;border-radius:6px}
+
+.grain{
+  position:fixed; inset:-50%; z-index:9998; pointer-events:none; opacity:.030;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain 6s steps(6) infinite;
+}
+@keyframes grain{
+  0%,100%{transform:translate(0,0)} 16%{transform:translate(-3%,-4%)}
+  33%{transform:translate(-6%,2%)} 50%{transform:translate(4%,-3%)}
+  66%{transform:translate(-2%,5%)} 83%{transform:translate(3%,3%)}
+}
+.prog{position:fixed;top:0;left:0;height:2px;width:100%;z-index:9997;transform-origin:0 50%;transform:scaleX(0);
+  background:linear-gradient(90deg,var(--pink),var(--yellow));pointer-events:none;box-shadow:0 0 12px rgba(197,0,149,.6)}
+
+/* ══════════════ FROSTED GLASS (Figma: Glass 15 / Glass 20 / Glass 30) ══════════════ */
+.lg{position:relative;background:rgba(5,5,5,.10);border:1px solid var(--w15);
+  -webkit-backdrop-filter:blur(15px);backdrop-filter:blur(15px);
+  transition:background-color .4s var(--ease),border-color .4s var(--ease)}
+.lg-hdr{-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+/* у плашки шапки размытие — на подложке ::before: иначе плашка становится «корнем» размытия
+   и выпадающее меню внутри неё не может размыть фон страницы */
+.pill.lg-hdr{-webkit-backdrop-filter:none;backdrop-filter:none;isolation:isolate}
+.pill.lg-hdr::before{content:'';position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.scrolled .ddm{background:rgba(5,5,5,.46)}   /* как плашка шапки после прокрутки */
+.scrolled .lg-hdr{background:rgba(5,5,5,.46)}
+/* UI Kit → Button: Secondary. Default — белый 15% + обводка 30% + blur 30; Hover — как Primary Hover */
+.lg-btn,.lg-w15{background:rgba(253,253,253,.15);border-color:var(--w30);-webkit-backdrop-filter:blur(15px);backdrop-filter:blur(15px)} /* Figma blur 30 = CSS 15 */
+.lg-btn:hover,.lg-w15:hover{background:var(--pink);border-color:var(--w30);box-shadow:var(--glow)}
+.lg-panel{background:rgba(5,5,5,.58)}
+.lg-panel:hover{background:rgba(5,5,5,.68)}
+.lg-solid{background:#050505;border:1px solid var(--w15);-webkit-backdrop-filter:none;backdrop-filter:none}
+/* UI Kit → Button/Social (подвал): Hover — розовая обводка и иконка + свечение */
+.ring{border:1px solid var(--white);border-radius:100px;color:var(--white);
+  transition:background-color .3s,border-color .3s,color .3s,box-shadow .3s}
+.ring:hover{border-color:var(--pink);color:var(--pink);box-shadow:var(--glow)}
+/* UI Kit → Button/Telegram, Button/WhatsApp (шапка): Hover — розовая обводка и иконка, без заливки и свечения */
+.ic.ring:hover{box-shadow:none}
+/* UI Kit → Button/Slider Arrow: Default — обводка и иконка 30%, при наведении — состояние Active (100%) */
+.ring-30{border:1px solid var(--w30);border-radius:100px;color:var(--w30);transition:border-color .3s,color .3s}
+.ring-30:hover{border-color:var(--white);color:var(--white)}
+
+/* ══════════════ TYPE ══════════════ */
+/* Roboto Flex в Figma: wdth 50 + параметрические оси XOPQ 73, XTRA 440 (у шрифта по умолчанию 96 / 468) */
+:root{--rf-axes:'XOPQ' 73,'XTRA' 440}
+.d{font-family:var(--f-d);font-weight:700;text-transform:uppercase;font-variation-settings:'wdth' var(--wdth),var(--rf-axes);font-stretch:50%;letter-spacing:0}
+h1,h2,h3{margin:0}
+.h1{font-size:clamp(38px,5.75vw,92px);line-height:1.05}
+.h2{font-size:clamp(26px,3vw,48px);line-height:1.10}
+.h3{font-size:clamp(24px,2.5vw,40px);line-height:normal}
+.h5{font-size:clamp(18px,1.5vw,24px);line-height:1.15}
+.y{color:var(--yellow)}
+.sub{font-size:clamp(16px,1.25vw,20px);color:var(--w80);line-height:normal}
+
+.l{display:block;overflow:hidden;padding-bottom:.09em;margin-bottom:-.09em}
+.l>i{display:block;font-style:normal;transform:translateY(115%);opacity:0;
+  transition:transform 1s var(--ease),opacity .8s var(--ease);transition-delay:var(--d,0ms)}
+.in .l>i{transform:translateY(0);opacity:1}
+.up{opacity:0;transform:translateY(34px);transition:opacity .8s var(--ease),transform .9s var(--ease);transition-delay:var(--d,0ms)}
+.in.up,.in .up{opacity:1;transform:none}
+
+/* ══════════════ SHELL ══════════════ */
+.wrap{width:100%;max-width:calc(var(--max) + var(--pad)*2);margin-inline:auto;padding-inline:var(--pad)}
+section{position:relative;scroll-margin-top:112px}
+.mnav{display:none}
+.sec{padding-block:calc(var(--gap)/2)}
+#about{padding-top:var(--gap)}   /* the hero has no bottom padding of its own */
+
+.shead{display:flex;flex-direction:column;align-items:center;gap:24px;text-align:center;margin-inline:auto}
+.shead .tb{display:flex;flex-direction:column;align-items:center;gap:16px}
+.label{display:inline-flex;padding:6px 12px;border-radius:4px;background:var(--y15);color:var(--yellow);
+  font-size:16px;line-height:normal;backdrop-filter:blur(4.8px);position:relative;overflow:hidden}
+.label::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(251,195,74,.45) 50%,transparent 70%);
+  transform:translateX(-120%);animation:sheen 5s ease-in-out infinite}
+@keyframes sheen{0%,72%{transform:translateX(-120%)}88%,100%{transform:translateX(120%)}}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding-inline:32px;
+  border-radius:10px;font-weight:500;font-size:16px;line-height:1;white-space:nowrap;position:relative;overflow:hidden;
+  transition:transform .45s var(--ease),box-shadow .3s,background-color .3s,border-color .3s}
+/* UI Kit → Button: Primary. Hover — та же заливка + обводка белым 30% + свечение */
+.btn-pink{background:var(--pink);color:var(--white)}
+.btn-pink:hover{box-shadow:inset 0 0 0 1px var(--w30),var(--glow)}   /* обводка внутрь — размер кнопки не меняется */
+.btn.lg{color:var(--white)}
+.btn:active{transform:scale(.97)}
+
+/* ══════════════ HEADER ══════════════ */
+.hdr{position:fixed;top:16px;left:0;right:0;z-index:900;pointer-events:none;
+  transition:transform .55s var(--ease),opacity .4s}
+.hdr.hide{transform:translateY(-140%);opacity:0}
+.hdr .wrap{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.pill{display:flex;align-items:center;gap:32px;padding:16px 24px;border-radius:16px;pointer-events:auto}
+.brand{width:74px;height:56px;flex:none;position:relative;overflow:hidden;
+  filter:drop-shadow(0 0 10px rgba(197,0,149,.55));transition:filter .5s,transform .5s var(--ease)}
+.brand::before{content:'';position:absolute;left:-16.11%;top:-0.09%;width:132.32%;height:120.46%;
+  background:var(--i-neon) center/100% 100% no-repeat}
+.brand:hover{transform:scale(1.06);filter:drop-shadow(0 0 18px rgba(197,0,149,.95))}
+.nav{display:flex;align-items:center;gap:24px}
+.nl{display:inline-flex;align-items:center;gap:4px;height:24px;font-weight:500;font-size:16px;line-height:1;
+  white-space:nowrap;color:var(--white)}
+.ci .nl{align-self:flex-start}
+.nl>span{position:relative;display:inline-block;padding-bottom:3px}
+.nl>span::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--white);
+  transform:scaleX(0);transform-origin:100% 50%;transition:transform .5s var(--ease)}
+/* UI Kit → UI/Nav link: Hover — текст белый 60%, без подчёркивания */
+.nl{transition:color .3s}
+.nl:hover{color:var(--w60)}
+.nl>span::after{display:none}
+.nl svg{flex:none;width:16px;height:16px;transition:transform .4s var(--ease)}
+.dd{position:relative;display:flex;align-items:center}
+/* Figma Nav Dropdown: Default — стрелка вниз, Variant2 — вверх; переход Smart Animate 300 мс ease-out */
+.dd .nl svg{transform:rotate(180deg);transition:transform .3s ease-out}
+.dd.open .nl svg{transform:none}
+/* Figma Dropdown Menu: 253 шириной, поля 16 сверху/снизу, скруглены только нижние углы 16,
+   стекло как у шапки (чёрный 10%, обводка 15%, blur 20 → CSS 10) */
+.ddm{position:absolute;top:calc(100% + 18px);left:-12px;width:253px;border-radius:0 0 16px 16px;
+  padding:16px 0;background:rgba(5,5,5,.10);border:1px solid var(--w15);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);overflow:hidden;opacity:0;visibility:hidden;
+  transition:opacity .3s ease-out,visibility .3s}   /* Figma: Smart Animate 300 мс ease-out — меню просто проявляется */
+.dd.open .ddm{opacity:1;visibility:visible}   /* .open ставит скрипт: наведение, щелчок, Esc */
+.ddm a{display:flex;align-items:center;padding:8px 16px;font-size:18px;white-space:nowrap;position:relative;
+  transition:background-color .25s}
+.ddm a:hover{background:var(--w15)}   /* UI Kit → Menu Item: Hover */
+.hdr .ci{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.hdr .ci small{font-size:12px;opacity:.7;line-height:normal}
+.soc{display:flex;gap:8px}
+.ic{width:40px;height:40px;display:grid;place-items:center}
+.ic svg{width:24px;height:24px}
+/* Figma Header (десктоп): плашки высотой 80; слева логотип 90×68 (absolute, x24 y6) и меню, прижатое вправо в плашке 578;
+   справа контакты —24— соцкнопки —16— кнопка */
+@media (min-width:1081px){
+  .pill{height:80px}
+  .pill:not(.r){width:578px;min-width:max-content;padding-left:141px;justify-content:flex-end;position:relative}
+  .pill:not(.r) .brand{position:absolute;left:24px;top:6px;width:90px;height:68px}
+  .pill.r{gap:24px}
+  .pill.r .soc{margin-right:-8px}   /* 24 − 8 = 16 до кнопки; когда .soc скрыт (≤1300), правило не действует */
+  .dd .nl{padding:0}
+  .ddm{top:calc(100% + 28px)}   /* вплотную к низу плашки: (80 − 24) / 2 = 28 */
+  .ci .nl{height:auto}
+}
+/* 1081–1280: две плашки шапки целиком не помещаются (578+16+605) — прячем только телефон с адресом */
+@media (min-width:1081px) and (max-width:1280px){ .hdr .ci{display:none} }
+.burger{display:none;position:relative;width:40px;height:40px;border-radius:10px;pointer-events:auto}
+.burger span{position:absolute;left:11px;width:18px;height:1.5px;border-radius:2px;background:#fff;z-index:3;
+  transition:transform .4s var(--ease),opacity .3s}
+.burger span:nth-child(1){top:13px}
+.burger span:nth-child(2){top:19.25px}
+.burger span:nth-child(3){top:25.5px}
+.mopen .burger span:nth-child(1){transform:translateY(6.25px) rotate(45deg)}
+.mopen .burger span:nth-child(2){opacity:0}
+.mopen .burger span:nth-child(3){transform:translateY(-6.25px) rotate(-45deg)}
+
+/* ══════════════ HERO ══════════════ */
+.hero{height:100svh;min-height:660px;max-height:1100px;position:relative;overflow:hidden;display:flex;
+  flex-direction:column;justify-content:flex-end;align-items:center;padding-bottom:clamp(28px,4vh,48px)}
+.kbs{position:absolute;inset:0;z-index:0;will-change:transform}
+/* Повтор After Effects-ролика «Hero_Slideshow.mp4» (замерено по кадрам):
+   новый зал каждые 9 с, наплыв 3 с, зал на экране 12 с (3 появление + 6 + 3 уход),
+   камера равномерно отъезжает от центра 115% → 100%. Цикл 5 × 9 = 45 с.
+   12 с = 26.667% цикла, 3 с = 6.667%. Лава стартует с −3 с — при загрузке уже видна целиком. */
+.kb{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;will-change:transform,opacity;
+  transform:scale(1.15);animation:kb 45s infinite linear}
+/* Лава, Тропики, Эйфория подняты по её просьбе: 75% по вертикали ≈ на 40 px выше центра (запас фото ~164 px на 1600×900) */
+.kb:nth-child(1){background-image:var(--i-hero-lava);background-position:50% 75%;animation-delay:-3s}
+.kb:nth-child(2){background-image:var(--i-kosmos);background-position:50% 61%;animation-delay:6s}   /* в ролике Космос на 20 px выше центра */
+.kb:nth-child(3){background-image:var(--i-hero-tropiki);background-position:50% 75%;animation-delay:15s}
+.kb:nth-child(4){background-image:var(--i-laguna);animation-delay:24s}
+.kb:nth-child(5){background-image:var(--i-euphoria);background-position:50% 75%;animation-delay:33s}
+@keyframes kb{
+  0%      {opacity:0;transform:scale(1.15)}
+  6.667%  {opacity:1}
+  20%     {opacity:1}
+  26.667% {opacity:0;transform:scale(1)}
+  100%    {opacity:0;transform:scale(1)}
+}
+/* progressive blur: the photo dissolves into the page ground */
+.hero-blur{position:absolute;left:0;right:0;bottom:0;height:46%;z-index:1;pointer-events:none}
+.hero-blur i{position:absolute;inset:0;display:block}
+.hero-blur i:nth-child(1){-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+  -webkit-mask:linear-gradient(to top,#000 0%,#000 26%,transparent 52%);mask:linear-gradient(to top,#000 0%,#000 26%,transparent 52%)}
+.hero-blur i:nth-child(2){-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  -webkit-mask:linear-gradient(to top,#000 0%,#000 16%,transparent 38%);mask:linear-gradient(to top,#000 0%,#000 16%,transparent 38%)}
+.hero-blur i:nth-child(3){-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  -webkit-mask:linear-gradient(to top,#000 0%,#000 8%,transparent 25%);mask:linear-gradient(to top,#000 0%,#000 8%,transparent 25%)}
+.hero-blur i:nth-child(4){-webkit-backdrop-filter:blur(34px);backdrop-filter:blur(34px);
+  -webkit-mask:linear-gradient(to top,#000 0%,transparent 13%);mask:linear-gradient(to top,#000 0%,transparent 13%)}
+.hero-veil{position:absolute;left:0;right:0;bottom:0;height:64%;z-index:1;pointer-events:none;
+  background:linear-gradient(to top,var(--black) 8%,rgba(5,5,5,.80) 45%,rgba(0,0,0,0))}
+.hero-top{position:absolute;inset:0 0 auto;height:180px;z-index:1;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(5,5,5,.55),transparent)}
+
+.hero-in{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:clamp(32px,5vh,72px);width:100%}
+.hero-title{display:flex;flex-direction:column;align-items:center;gap:32px}
+.hero h1{max-width:640px;text-align:center;will-change:transform}
+.loaded .hero h1{animation:wdthIn 1.5s var(--ease) both}
+@keyframes wdthIn{ from{--wdth:26} to{--wdth:50} }
+
+.metrics{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(20px,3.5vw,56px);will-change:transform}
+.metric{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
+.metric .v{color:var(--white);display:flex;align-items:center;gap:8px;font-size:clamp(26px,2.5vw,40px);line-height:normal;white-space:nowrap}
+.metric small{font-size:clamp(13px,1vw,16px);color:var(--white)}
+.metric svg{flex:none;width:32px;height:32px}
+.metric:nth-child(1) svg{width:68px;height:32px}
+
+/* ══════════════ FEATURES ══════════════ */
+.feats-track{position:relative;height:280vh}
+/* по её просьбе фото почти на всю высоту экрана: по 16 px сверху и снизу (как отступ шапки) */
+.feats-sticky{position:sticky;top:16px;height:calc(100svh - 32px);min-height:430px;display:flex;align-items:center}
+.fg{position:relative;width:100%;height:100%;border-radius:16px;border:1px solid var(--w15);overflow:hidden;background:#0b0b0c}
+.fg-media{position:absolute;inset:0}
+.fg-media canvas{position:absolute;inset:0;width:100%;height:100%}
+.fg-img{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity .9s var(--ease)}
+.fg-img.on{opacity:1}
+/* Figma Gradient Overlay (замер по пикселям макета): слева −74% яркости, к 30% ширины сходит на нет */
+.fg-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,5,5,.74) 0%,rgba(5,5,5,0) 30%)}
+@media (min-width:861px){ .fg-shade2{display:none} }   /* нижнего затемнения в макете нет */
+.fg-shade2{position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(to top,rgba(5,5,5,.92),transparent)}
+.fg-card{position:absolute;left:40px;top:40px;width:485px;min-height:303px;padding:24px;border-radius:10px;overflow:hidden}
+.fg-list{display:grid}
+.fg-list>div{grid-area:1/1;display:flex;flex-direction:column;gap:16px;opacity:0;transform:translateY(18px);
+  pointer-events:none;transition:opacity .55s var(--ease),transform .7s var(--ease)}
+.fg-list>div.on{opacity:1;transform:none;pointer-events:auto}
+.fi{display:flex;flex-direction:column;gap:5px;font-size:clamp(16px,1.25vw,20px);line-height:normal}
+.fi b{font-weight:400;color:var(--white)}
+.fi span{color:var(--w60)}
+/* Figma: заголовок низом на 62 от края, полоски на 40 — между ними 20 */
+.fg-cap{position:absolute;left:40px;right:40px;bottom:62px;height:1.15em;display:grid}
+.fg-cap span{grid-area:1/1;opacity:0;transform:translateY(14px);transition:opacity .5s var(--ease),transform .6s var(--ease)}
+.fg-cap span.on{opacity:1;transform:none}
+.fg-bars{position:absolute;left:40px;right:40px;bottom:40px;display:flex;gap:8px}
+.bar{flex:1;height:2px;border-radius:10px;background:var(--w30);overflow:hidden;position:relative}
+.bar i{position:absolute;inset:0;background:var(--white);transform-origin:0 50%;transform:scaleX(0)}
+
+/* ══════════════ ROOMS ══════════════ */
+.rooms-stack{display:flex;flex-direction:column;gap:clamp(60px,10vw,160px);padding-bottom:8vh}
+.room-slot{position:sticky;top:max(20px,calc(50vh - 375px));will-change:transform}
+.room{position:relative;display:flex;height:750px;border-radius:16px;border:1px solid var(--w15);overflow:hidden;
+  background:var(--card);transform-origin:50% 0;box-shadow:0 40px 90px -50px rgba(0,0,0,.95)}
+.room-dim{position:absolute;inset:0;z-index:6;background:#050505;opacity:0;pointer-events:none}
+.room-photo{position:relative;flex:1 1 50%;min-width:0;overflow:hidden;background:#000}
+.room-photo canvas{position:absolute;inset:0;width:100%;height:100%}
+.rp{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity .9s var(--ease)}
+.rp.on{opacity:1}
+.room-photo::after{content:'';position:absolute;left:0;right:0;bottom:0;height:130px;pointer-events:none;
+  background:linear-gradient(to top,var(--black),rgba(0,0,0,0))}
+.room-bars{position:absolute;left:48px;right:48px;bottom:44px;z-index:3;display:flex;gap:8px}
+.room-bars .bar{cursor:pointer}
+.room-bars .bar::before{content:'';position:absolute;inset:-9px 0}
+.room-side{flex:1 1 50%;min-width:0;background:var(--card);padding:48px;display:flex;flex-direction:column;justify-content:space-between;gap:24px}
+.room-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.room-no{font-size:16px;color:var(--w60);white-space:nowrap}
+.tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.tag{padding:6px 12px;border-radius:6px;background:var(--w15);font-size:18px;line-height:normal;white-space:nowrap}
+.tag sup{font-size:.65em;vertical-align:super}
+.room-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.prices{display:flex;flex-direction:column;gap:32px}
+.pb{display:flex;flex-direction:column;gap:16px}
+.pb-t{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.pb-t b{font-weight:600;font-size:20px}
+.badge{padding:6px 12px;border-radius:4px;background:var(--y15);color:var(--yellow);font-size:16px;line-height:1;white-space:nowrap}
+.pv{display:flex;align-items:baseline;gap:16px;color:var(--yellow);white-space:nowrap}
+.pv .a{font-size:clamp(28px,2.5vw,40px);line-height:normal}
+.pv .b{font-size:clamp(24px,2.25vw,36px);line-height:normal}
+
+/* ══════════════ COMBOS (Card/Promo 1:1) ══════════════ */
+.combos{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding-inline:16px;perspective:1100px}
+.combo{position:relative;aspect-ratio:480/300;border-radius:16px;overflow:hidden;display:block;isolation:isolate;
+  transform-style:preserve-3d;will-change:transform;
+  transition:transform .5s var(--ease),box-shadow .6s var(--ease)}
+.combo-img{position:absolute;inset:0;background-size:cover;background-position:center;
+  transition:transform 1.1s var(--ease)}
+.combo-veil{position:absolute;inset:0;z-index:1;background:rgba(5,5,5,.30);opacity:0;transition:opacity .5s var(--ease)}
+/* Title Wrapper — full-width blurred gradient bar pinned to the bottom */
+.combo-b{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:24px 12px;display:flex;align-items:center;justify-content:center;
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  background:linear-gradient(180deg,rgba(0,0,0,0) 0%,#050505 99.97%)}
+.combo-t{font-size:clamp(15px,1.55vw,24px);line-height:1.15;text-align:center}
+/* Button — centred, opacity 0 until hover */
+.combo-link{position:absolute;left:50%;top:50%;z-index:3;translate:-50% -50%;
+  display:inline-flex;align-items:center;gap:8px;font-size:clamp(15px,1vw,16px);font-weight:500;white-space:nowrap;
+  opacity:0;transform:scale(.9);transition:opacity .45s var(--ease),transform .6s var(--ease)}
+.combo-link svg{width:24px;height:24px;transition:transform .5s var(--ease)}
+.combo:hover{box-shadow:0 34px 76px -30px rgba(0,0,0,.95)}
+.combo:hover .combo-img{transform:scale(1.09)}
+.combo:hover .combo-veil{opacity:1}
+.combo:hover .combo-link{opacity:1;transform:none}
+
+/* ══════════════ SPECIAL OFFERS (Frame 1589 1:1) ══════════════ */
+.offers{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.offer{container-type:inline-size;position:relative;aspect-ratio:362/340;border-radius:16px;overflow:hidden;
+  border:1px solid var(--w15);isolation:isolate;
+  transition:transform .6s var(--ease),box-shadow .6s var(--ease)}
+.offer:hover{transform:translateY(-8px);box-shadow:0 34px 70px -34px rgba(0,0,0,.9)}
+.o1{background:linear-gradient(-46.37deg,#54C2F0 14.06%,#217498 57.98%,#0E5B7C 99.43%)}
+.o2{background:linear-gradient(136.21deg,#A2481D 12.61%,#C25724 26.02%,#F0AB37 64.12%)}
+.o3{background:linear-gradient(-45.30deg,#43E591 14.54%,#189056 51.78%,#09623D 103.25%)}
+.o4{background:linear-gradient(-46.24deg,#E161DD 16.07%,#B22D92 57.09%,#77115E 104.62%)}
+.offer-art{position:absolute;left:0;width:100%;z-index:0;background-size:cover;background-position:center;will-change:transform}
+.o1 .offer-art{top:0;height:85.64cqw;background-image:var(--i-o1);opacity:.15}
+.o2 .offer-art{top:28.92cqw;height:64.92cqw;background-image:var(--i-o2);opacity:.16}
+.o3 .offer-art{top:12.62cqw;height:81.22cqw;background-image:var(--i-o3);opacity:.27}
+.o4 .offer-art{top:6.55cqw;height:87.29cqw;background-image:var(--i-o4);opacity:.15}
+.offer-top{position:absolute;left:6.55cqw;top:6.55cqw;z-index:3;display:flex;flex-direction:column;gap:.55cqw;max-width:80cqw}
+.offer-top .a{font-family:var(--f-b);font-weight:900;font-size:5.52cqw;line-height:1.1;text-transform:uppercase;color:var(--yellow2)}
+.offer-top .b{font-family:var(--f-b);font-weight:400;font-size:4.42cqw;line-height:1.15;color:#fff}
+.o4 .offer-top .b{font-weight:500;font-size:3.95cqw}
+.offer-word{position:absolute;z-index:2;color:#fff;line-height:1.05;white-space:nowrap;pointer-events:none;
+  font-family:var(--f-d);font-weight:640;text-transform:uppercase;
+  text-box:trim-both cap alphabetic;
+  transform-origin:0 0;transform:scaleX(var(--sx,1));
+  transition:transform .7s var(--ease)}
+.o1 .offer-word{left:35.74cqw;top:66.22cqw;font-size:40.88cqw;font-variation-settings:'wdth' 32,var(--rf-axes)}
+.o2 .offer-word{left:55.72cqw;top:66.22cqw;font-size:40.88cqw;font-weight:700;font-variation-settings:'wdth' 50,var(--rf-axes)}
+.o3 .offer-word{left:41.35cqw;top:50.75cqw;font-size:27.62cqw;line-height:.9;font-variation-settings:'wdth' 32,var(--rf-axes);white-space:normal}
+.o4 .offer-word{left:55.48cqw;top:66.22cqw;font-size:40.88cqw;font-variation-settings:'wdth' 37,var(--rf-axes)}
+@supports not (text-box: trim-both cap alphabetic){
+  .offer-word{top:auto;bottom:-.20em}
+  .o3 .offer-word{top:auto;bottom:-.155em}
+}
+.offer:hover .offer-word{transform:translateX(-3.2cqw) scaleX(var(--sx,1))}
+.offer-note{position:absolute;left:6.55cqw;z-index:3;font-weight:600;font-size:4.42cqw;line-height:1;color:var(--white)}
+.o1 .offer-note{top:81.68cqw}
+.o2 .offer-note{top:82.24cqw}
+.o3 .offer-note{top:82.51cqw}
+.o4 .offer-note{top:82.79cqw}
+.offers-star{margin-top:40px;font-size:16px;color:var(--w60)}
+
+/* ══════════════ GALLERY MARQUEE ══════════════ */
+.mq{display:flex;flex-direction:column;gap:16px;overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.mq-row{display:flex;gap:16px;width:max-content;will-change:transform}
+.ph{width:clamp(210px,23vw,359px);aspect-ratio:359/240;border-radius:12px;background-size:cover;background-position:center;
+  flex:none;cursor:zoom-in;position:relative;overflow:hidden;transition:transform .55s var(--ease)}
+.ph::after{content:'';position:absolute;inset:0;background:rgba(5,5,5,.34);opacity:0;transition:opacity .45s}
+.ph:hover{transform:scale(1.045)}
+.ph:hover::after{opacity:1}
+
+/* ══════════════ REVIEWS ══════════════ */
+.rev-view{position:relative;overflow:hidden;padding-bottom:8px}
+.rev-photos{display:flex;gap:16px;width:max-content;will-change:transform;
+  margin-left:calc(var(--pad) - 114px)}
+.rev-photo{width:572px;aspect-ratio:572/402;border-radius:16px;background-size:cover;background-position:center;flex:none}
+.rev-cards{display:flex;gap:24px;width:max-content;margin-top:-100px;margin-left:var(--pad);position:relative;z-index:2;
+  will-change:transform;transition:transform 1.05s var(--ease)}
+.rev-card{width:490px;flex:none;border-radius:18px;padding:24px;overflow:hidden;
+  display:flex;flex-direction:column;gap:16px;
+  transition:transform .6s var(--ease),box-shadow .5s var(--ease)}
+.rev-card:hover{transform:translateY(-6px)}
+.rev-u{display:flex;align-items:center;gap:12px}
+.rev-av{width:48px;height:48px;border-radius:100px;background-size:cover;background-position:center;flex:none;background-color:#e9e9e9}
+.rev-u b{display:block;font-weight:400;font-size:20px;line-height:normal}
+.rev-u small{font-size:16px;color:var(--w60)}
+.stars{display:flex;gap:4px}
+.stars svg{width:18px;height:18px}
+.rev-txt{font-size:18px;line-height:1.4;color:var(--w80)}
+.rev-ctl{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-top:32px;flex-wrap:wrap}
+.dots{display:flex;gap:8px;align-items:center}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--w30);transition:background-color .4s,width .45s var(--ease),height .45s var(--ease)}
+.dot.on{background:var(--white);width:10px;height:10px}
+.arrows{display:flex;gap:24px;align-items:center}
+.arr{width:40px;height:40px;display:grid;place-items:center}
+.arr svg{width:18px;height:18px}
+
+/* ══════════════ SEO ══════════════ */
+.seo{display:grid;grid-template-columns:712fr 136fr 712fr;gap:0}
+.seo-r{grid-column:3}
+.seo-body{position:relative;overflow:hidden;height:171px;transition:height .85s var(--ease)}
+.seo-body>div{display:flex;flex-direction:column;gap:24px;font-size:18px;line-height:1.4}
+.seo-body h3{font-size:20px;font-weight:600;font-family:var(--f-b);text-transform:none}
+.seo-body ul{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px}
+.seo-body li::marker{color:var(--w60)}
+.seo-body li b{font-size:20px;font-weight:600}
+.seo-fade{position:absolute;left:0;right:0;bottom:0;height:133px;pointer-events:none;
+  background:linear-gradient(to top,var(--black) 8%,rgba(5,5,5,0));transition:opacity .5s}
+.seo-open .seo-fade{opacity:0}
+.seo-tg{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-weight:500}
+.seo-tg svg{width:24px;height:24px;transition:transform .45s var(--ease)}
+/* UI Kit → Button: Tertiary. Hover — текст и иконка розовые + свечение */
+.seo-tg,.combo-link{transition:color .3s,text-shadow .3s,opacity .4s var(--ease),transform .4s var(--ease)}
+.seo-tg:hover,.combo-link:hover{color:var(--pink);text-shadow:var(--glow)}
+.seo-tg:hover svg,.combo-link:hover svg{filter:drop-shadow(var(--glow))}
+/* UI Kit → UI/Accordion Toggle: «Читать полностью» — стрелка вниз, «Свернуть» — вверх */
+.seo-tg svg{transform:rotate(180deg)}
+.seo-open .seo-tg svg{transform:none}
+
+/* ══════════════ MAP + FOOTER ══════════════ */
+.mapwrap{position:relative;min-height:606px;overflow:hidden;background:#5b4820;
+  padding-block:45px;display:flex;align-items:flex-start}
+.mapwrap>.wrap{position:relative;z-index:3;pointer-events:none}
+.mapwrap .mapcard{pointer-events:auto}
+.mapview{position:absolute;inset:0;z-index:0;overflow:hidden;cursor:grab;touch-action:pan-y}
+.mapview.drag{cursor:grabbing}
+.maplayer{position:absolute;left:0;top:0;background-repeat:no-repeat;background-size:100% 100%;
+  will-change:transform;transition:opacity .45s var(--ease)}
+.mapctl{position:absolute;right:24px;bottom:24px;z-index:4;display:flex;flex-direction:column;gap:8px}
+.mapctl button{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-size:22px;line-height:1}
+.mapattr{position:absolute;left:50%;translate:-50% 0;bottom:10px;z-index:4;font-size:11px;color:rgba(255,255,255,.55);
+  background:rgba(5,5,5,.35);padding:3px 10px;border-radius:20px;pointer-events:none;white-space:nowrap}
+.pin{position:absolute;z-index:2;width:90px;height:112px;translate:-50% -100%;pointer-events:none;
+  animation:pinFloat 3.4s ease-in-out infinite}
+@keyframes pinFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.pin::before{content:'';position:absolute;left:50%;top:100%;translate:-50% -6px;width:56px;height:14px;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(197,0,149,.5),transparent);animation:pinSh 3.4s ease-in-out infinite}
+@keyframes pinSh{0%,100%{transform:scale(1);opacity:.75}50%{transform:scale(.7);opacity:.4}}
+.pin i{position:absolute;left:9px;top:9px;width:72px;height:72px;border-radius:50%;background:var(--pink);
+  display:grid;place-items:center;box-shadow:0 0 0 0 rgba(197,0,149,.55);animation:pulse 2.6s ease-out infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(197,0,149,.6)}70%{box-shadow:0 0 0 34px rgba(197,0,149,0)}100%{box-shadow:0 0 0 0 rgba(197,0,149,0)}}
+.pin i div{width:44px;height:44px;background:var(--i-neon) center/220% no-repeat;background-position:52% 18%}
+.mapcard{position:relative;z-index:3;width:619px;max-width:100%;padding:28px;border-radius:16px;
+  display:flex;flex-direction:column;gap:20px}
+.mc-row .k{color:var(--yellow);font-size:16px;margin-bottom:4px}
+.mc-row .v{font-size:clamp(16px,1.25vw,20px);line-height:normal}
+.maplink{align-self:flex-start}
+footer{position:relative;display:flex;flex-direction:column;align-items:center;
+  padding-top:clamp(48px,7vw,114px)}
+.flogo{--fw:clamp(240px,26vw,417px);width:var(--fw);height:calc(var(--fw)/1.2229);
+  position:relative;z-index:0;flex:none;overflow:hidden;
+  margin-bottom:calc(var(--fw)/1.2229*-0.1613);      /* 55 of 341 slides under the bar */
+  filter:drop-shadow(0 0 30px rgba(197,0,149,.45));animation:neon 5s ease-in-out infinite}
+.flogo::before{content:'';position:absolute;left:-16.11%;top:-0.09%;width:132.32%;height:120.46%;
+  background:var(--i-neon) center/100% 100% no-repeat}
+@keyframes neon{
+  0%,100%{filter:drop-shadow(0 0 24px rgba(197,0,149,.45))}
+  42%{filter:drop-shadow(0 0 46px rgba(197,0,149,.85))}
+  45%{filter:drop-shadow(0 0 16px rgba(197,0,149,.3))}
+  48%{filter:drop-shadow(0 0 44px rgba(197,0,149,.8))}
+}
+.fbar{position:relative;z-index:1;width:100%;min-height:clamp(260px,22vw,355px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;
+  padding:32px 40px;text-align:center;
+  background:rgba(5,5,5,.70);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.fgroup{display:flex;flex-direction:column;align-items:center;gap:16px}
+.fsoc{display:flex;gap:8px;justify-content:center}
+.fsoc a{width:40px;height:40px;display:grid;place-items:center}
+.fnote{font-size:14px;color:var(--w60);line-height:normal;max-width:273px}
+.fleg{font-size:16px;color:var(--w60);line-height:normal;max-width:306px}
+.fpol{font-size:16px;font-weight:500}
+
+/* ══════════════ MODALS ══════════════ */
+.mod{position:fixed;inset:0;z-index:1000;display:none;place-items:center;padding:clamp(10px,2vw,28px)}
+.mod.open{display:grid}
+.mod-bd{position:absolute;inset:0;background:rgba(3,3,3,.82);backdrop-filter:blur(18px);opacity:0;transition:opacity .5s var(--ease)}
+.mod.in .mod-bd{opacity:1}
+.mod-in{position:relative;width:100%;max-width:1600px;aspect-ratio:1600/947;max-height:100%;border-radius:20px;overflow:hidden;
+  background:#0a0a0b;border:1px solid var(--w15);opacity:0;transform:scale(.965) translateY(18px);
+  transition:opacity .55s var(--ease),transform .7s var(--ease);box-shadow:0 60px 140px -50px #000}
+.mod.in .mod-in{opacity:1;transform:none}
+.mod-x{position:absolute;right:20px;top:20px;z-index:10;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;
+  color:var(--white);transition:color .3s}
+/* UI Kit → Button/Modal Action Close / Expand: Hover — иконка белая 30%, фон не меняется */
+.mod-x:hover,.rd-exp:hover{color:var(--w30)}
+.mod-x.lg-panel:hover,.rd-exp.lg-panel:hover{background:rgba(5,5,5,.58)}
+.mod-bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:opacity .5s}
+.rd-panel{position:absolute;left:clamp(12px,1.6vw,24px);top:clamp(12px,1.6vw,24px);bottom:clamp(12px,1.6vw,24px);z-index:5;
+  width:min(575px,46%);display:flex;flex-direction:column;gap:12px;overflow-y:auto;overscroll-behavior:contain;
+  scrollbar-width:thin;scrollbar-color:var(--w30) transparent}
+.gl{border-radius:16px;padding:20px 24px}
+.rd-prices{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rd-p .k{font-size:18px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px;justify-content:space-between}
+.rd-p .t{font-size:15px;color:var(--w60);margin-bottom:4px}
+.rd-p .v{color:var(--yellow);font-size:clamp(22px,2vw,30px);line-height:1.1}
+.rd-p .v span{font-size:.62em}
+.rd-eq{color:var(--w80);font-size:15px;line-height:1.4}
+.rd-eq b{display:block;color:var(--w60);font-weight:400;margin-bottom:12px}
+.rd-eq ul{margin:0 0 14px;padding-left:20px;display:flex;flex-direction:column;gap:6px;color:var(--white)}
+.rd-thumbs{position:absolute;right:clamp(12px,2vw,80px);bottom:clamp(12px,2vw,28px);z-index:5;display:flex;gap:8px}
+.rd-thumbs .t{width:72px;height:52px;border-radius:8px;background-size:cover;background-position:center;cursor:pointer;
+  border:1px solid transparent;opacity:.65;transition:opacity .4s,transform .4s var(--ease),border-color .4s}
+.rd-thumbs .t:hover{opacity:1;transform:translateY(-4px)}
+.rd-thumbs .t.on{opacity:1;border-color:var(--white)}
+.rd-exp{position:absolute;right:clamp(12px,2vw,20px);bottom:clamp(12px,2vw,28px);z-index:5;width:52px;height:52px;border-radius:14px;
+  display:grid;place-items:center;color:var(--white);transition:color .3s}
+.gf-nav{position:absolute;top:50%;translate:0 -50%;z-index:6;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;
+  transition:transform .35s var(--ease)}
+.gf-nav:hover{transform:scale(1.08)}
+.gf-prev{left:20px} .gf-next{right:20px}
+/* базовые правила для новой разметки окна зала (на мобильной выглядят как прежде) */
+.rd-shade{display:none}
+.rd-p{position:relative}
+.rd-badge{position:absolute;top:12px;right:12px}
+.rd-row + .rd-row{margin-top:10px}
+.rd-p .v .sfx span{font-size:1em}
+.rd-book{display:flex;flex-direction:column;gap:12px;align-items:center}
+.rd-book .btn{width:100%}
+.rd-book small{color:var(--w60);font-size:15px}
+.rd-extra p{margin:0;color:var(--white)}
+.rd-extra small{display:block;margin-top:10px;color:var(--w60);font-size:15px}
+
+/* ══ Окна зала и галереи на десктопе — по Figma: Modal/Room Details, Modal/Gallery Fullscreen (1600×947) ══ */
+@media (min-width:861px){
+  .mod{padding:0}
+  .mod-in{max-width:none;width:100%;height:100%;aspect-ratio:auto;max-height:none;border-radius:0;border:0;box-shadow:none}
+  .mod .lg-panel,.mod .lg-panel:hover{background:rgba(5,5,5,.10)}          /* стекло: чёрный 10%, обводка 15%, blur 30 → 15 */
+  .mod-x{right:56px;top:56px;border-radius:10px}
+  .rd-shade{display:block;position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:linear-gradient(90deg,rgba(5,5,5,.74) 0%,rgba(5,5,5,0) 53.75%)}   /* Gradient Background 860 из 1600 */
+  .rd-panel{left:40px;top:40px;bottom:40px;width:568px;gap:16px}
+  .mod .gl{border-radius:10px;padding:16px 24px}
+  .rd-head{display:flex;flex-direction:column;gap:16px}
+  .rd-head h3{font-size:40px;line-height:normal}
+  .rd-head .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:0}   /* отступ даёт gap 16 шапки */
+  .rd-head .tag{border-radius:4px;padding:6px 12px;font-size:18px;line-height:normal}
+  .rd-head .tag sup{line-height:0}   /* «²» не раздвигает строку тега */
+  .rd-prices{gap:8px}
+  .rd-p{display:flex;flex-direction:column;gap:24px}
+  .rd-p .k{font-size:20px;font-weight:600;line-height:normal;margin:0}
+  .rd-badge{line-height:normal}   /* Figma Badge: R16 auto → высота 32 */
+  .rd-rows{display:flex;flex-direction:column;gap:16px}
+  .rd-row + .rd-row{margin-top:0}
+  .rd-row{display:flex;flex-direction:column;gap:8px}
+  .rd-row .t{font-size:16px;color:var(--w60);margin:0;line-height:normal}
+  .rd-row .v{display:flex;align-items:baseline;gap:12px;color:var(--yellow);font-size:40px;line-height:28px;height:28px}   /* Figma Price Value: 28 */
+  .rd-row .v span{font-size:inherit}
+  .rd-row .sfx{display:flex;align-items:baseline;gap:1px}
+  .rd-row .v .sfx .per{font-family:var(--f-b);font-size:18px;font-weight:400;color:var(--w60);text-transform:none}   /* Figma: R18, 60% */
+  .rd-book{gap:8px;align-items:stretch;text-align:center;margin-top:-8px}   /* Figma Booking Card: цены и кнопка через 8, не 16 */
+  .rd-book small{font-size:16px}
+  .rd-eq{flex:1;display:flex;flex-direction:column;gap:32px;font-size:20px;font-weight:600;line-height:normal;color:var(--white)}
+  .rd-feat{display:flex;flex-direction:column;gap:16px}
+  .rd-eq b{font-size:18px;margin:0;color:rgba(253,253,253,.36)}   /* Figma: цвет 60% × прозрачность слоя 60% */
+  .rd-eq ul{margin:0;padding-left:28px;gap:8px}
+  .rd-extra{display:flex;flex-direction:column;gap:16px}
+  .rd-extra p{color:var(--w60)}
+  .rd-extra small{margin:0;font-size:16px;font-weight:400}   /* Figma: Caption R16 */
+  /* Gallery Tools: справа снизу 40/40, поля 8; миниатюры 64×64 r4 через 8; неактивные — 80% + затемнение 30% */
+  .rd-tools{position:absolute;right:40px;bottom:40px;z-index:5;display:flex;align-items:center;gap:32px;padding:8px;border-radius:8px}
+  .rd-tools .rd-thumbs{position:static;gap:8px}
+  .rd-thumbs .t{position:relative;width:64px;height:64px;border-radius:4px;border:0;opacity:.8;transition:opacity .3s}
+  .rd-thumbs .t::after{content:'';position:absolute;inset:0;border-radius:inherit;background:rgba(0,0,0,.30);transition:opacity .3s}
+  .rd-thumbs .t:hover{transform:none;opacity:1}
+  .rd-thumbs .t.on{opacity:1}
+  .rd-thumbs .t.on::after{opacity:0}
+  .rd-exp{position:static;width:64px;height:64px;border-radius:10px}
+  .gf-nav{display:none}
+}
+
+/* ══════════════ PACKAGE PAGES (Figma: Page/Package Details ×9) ══════════════ */
+/* первый экран: фото (верх кадра) + заголовок 80 по центру, низ заголовка на 90 от края */
+.pk-hero{justify-content:flex-end;padding-bottom:90px}
+.pk-hero .kbs{background:var(--i-pkg-hero) center top/cover no-repeat}
+.pk-hero .kbs::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(5,5,5,.55),rgba(5,5,5,0) 45%)}
+.pk-hero h1{position:relative;z-index:2;max-width:1212px;margin-inline:auto;text-align:center;
+  font-size:clamp(36px,5vw,80px);line-height:1.05}
+.d em,.sub em{font-style:normal;color:var(--yellow)}
+/* раздел цен: заголовок → 80 → карточки → 40 → общий блок */
+.pk-grid{display:flex;justify-content:center;align-items:flex-start;gap:24px;margin-top:80px}
+.pk-card{flex:0 1 490px;min-width:0;padding:40px 24px;border-radius:16px;border:1px solid var(--w15);
+  display:flex;flex-direction:column;gap:40px}
+.pk-card.l1{background:#0F0F10}.pk-card.l2{background:#1D1503}.pk-card.l3{background:#2B1F03}
+.pk-head{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+.pk-head h3{font-size:40px;line-height:normal}
+.pk-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.pk-tags .tag{border-radius:4px;padding:6px 12px;font-size:18px;line-height:normal}
+.pk-prices{display:grid;grid-template-columns:1fr 1fr;column-gap:36px}
+.pk-prices.one{grid-template-columns:1fr}
+.pk-price .t{font-size:16px;color:var(--w60);line-height:normal;margin-bottom:8px}
+.pk-price .row{display:flex;align-items:flex-end;gap:8px;height:28px;white-space:nowrap}
+.pk-price b{font-size:40px;line-height:28px;color:var(--yellow);font-weight:700}
+.pk-price s{font-size:24px;line-height:17px;color:var(--w60);font-weight:700}
+.pk-card .btn{width:100%}
+.pk-list h4{margin:0 0 24px;font-size:20px;font-weight:400;color:var(--w60);line-height:normal}
+.pk-list ul{margin:0;padding-left:26px;display:flex;flex-direction:column;gap:16px;font-size:20px;line-height:normal}
+.pk-list li.ys::marker{color:var(--yellow)}   /* пункт начинается с выделения — маркер тоже жёлтый */
+.pk-common{margin-top:40px;display:flex;flex-direction:column;gap:16px}
+.pk-common p{margin:0;max-width:488px;font-size:20px;font-weight:600;line-height:normal}
+.pk-common h4{margin:0;font-size:20px;font-weight:600;line-height:normal}
+.pk-common ul{margin:0;padding-left:26px;display:flex;flex-direction:column;gap:8px;max-width:760px;
+  font-size:18px;color:var(--w60);line-height:normal}
+
+/* ══════════════ RESPONSIVE ══════════════ */
+@media (max-width:1300px){
+  .fg-card{width:min(440px,46%)}
+  .room{height:660px}
+  .room-slot{top:max(16px,calc(50vh - 330px))}
+  .room-side{padding:32px}
+  .room-bars{left:32px;right:32px;bottom:32px}
+  .rev-photo{width:clamp(340px,42vw,572px)}
+  .rev-card{width:clamp(300px,36vw,490px)}
+}
+@media (max-width:1080px){
+  .hdr .ci,.hdr .soc{display:none}
+  .offers{grid-template-columns:repeat(2,1fr)}
+  .seo{grid-template-columns:1fr;gap:32px}
+  .seo-r{grid-column:1}
+  .mapcard{width:min(560px,calc(100% - 32px))}
+}
+@media (max-width:860px){
+  .hdr .nav,.hdr .pill.r{display:none}
+  .burger{display:block}
+  .hdr .wrap{align-items:center}
+  .pill{padding:12px 16px;gap:16px}
+  .feats-track{height:auto}
+  .mnav{display:flex;position:fixed;inset:0;z-index:899;background:rgba(5,5,5,.97);backdrop-filter:blur(20px);
+    flex-direction:column;justify-content:center;gap:6px;padding:24px 28px;
+    opacity:0;visibility:hidden;transition:opacity .45s var(--ease),visibility .45s}
+  .mopen .mnav{opacity:1;visibility:visible}
+  .mnav a{font-size:26px;padding-block:10px;font-family:var(--f-d);font-weight:700;text-transform:uppercase;
+    font-variation-settings:'wdth' 60,var(--rf-axes);opacity:0;transform:translateY(20px);
+    transition:opacity .5s var(--ease),transform .6s var(--ease)}
+  .mopen .mnav a{opacity:1;transform:none;transition-delay:calc(var(--i)*45ms + 120ms)}
+  .mnav .mfoot{margin-top:28px;display:flex;flex-direction:column;gap:14px;font-family:var(--f-b);text-transform:none}
+  .combos{grid-template-columns:repeat(2,1fr);gap:16px}
+  .fg{height:auto;aspect-ratio:auto;max-height:none;display:flex;flex-direction:column}
+  .feats-sticky{position:static;height:auto;max-height:none;display:block}
+  .fg-media{position:relative;aspect-ratio:16/10;overflow:hidden}
+  .fg-card{position:relative;left:auto;top:auto;width:auto;margin:16px}
+  .fg-cap{position:static;margin:0 20px 12px;height:auto}
+  .fg-cap span{position:relative}
+  .fg-bars{position:static;margin:0 20px 20px}
+  .fg-shade{background:linear-gradient(to top,rgba(5,5,5,.85),rgba(5,5,5,.1))}
+  .room{flex-direction:column;height:auto}
+  .room-slot{position:static}
+  .room-photo{aspect-ratio:16/10;flex:none}
+  .room-side{padding:24px;gap:32px}
+  .room-bars{left:24px;right:24px;bottom:24px}
+  .rev-cards{margin-top:-60px}
+  .rev-card{padding:20px}
+  .mapwrap{display:block;min-height:0;padding:0}
+  .mapview{position:relative;inset:auto;width:100%;height:320px}
+  .mapwrap>.wrap{padding-block:24px}
+  .mapcard{width:auto}
+  .mapctl{top:16px;bottom:auto;right:16px;flex-direction:row}
+  .mapattr{top:294px;bottom:auto}
+  .pin{left:70%;top:16%}
+  .mod-in{aspect-ratio:auto;height:100%;max-height:none;border-radius:16px}
+  .rd-panel{position:absolute;inset:auto 12px 12px 12px;width:auto;max-height:62%}
+  .pk-grid{flex-direction:column;align-items:stretch}   /* новые страницы пакетов: временно столбиком до мобильной вёрстки */
+  .pk-card{flex:none}
+  .rd-thumbs{display:none}
+}
+@media (max-width:620px){
+  body{font-size:16px}
+  .hero{padding-bottom:40px}
+  .offers{grid-template-columns:1fr}
+  .combos{grid-template-columns:1fr}
+  .metrics{gap:16px 22px}
+  .metric .v{font-size:26px}
+  .metric svg{width:22px;height:22px}
+  .metric:nth-child(1) svg{width:46px;height:22px}
+  .rd-prices{grid-template-columns:1fr}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;
+    transition-duration:.001ms!important;scroll-behavior:auto!important}
+  .l>i,.up{opacity:1!important;transform:none!important}
+  .kb:nth-child(1){opacity:1}
+}
+</style>
+
+<div class="grain"></div>
+<div class="prog" id="prog"></div>
+
+<!-- ════════ ICON SPRITE (exported from Figma) ════════ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-tg" viewBox="0 0 20 18"><path d="M19.3096 0.50293C19.4141 0.494687 19.4654 0.507434 19.4834 0.513672C19.4889 0.527139 19.4948 0.554115 19.4971 0.603516L16.3574 17.0937C16.3489 17.1108 16.3378 17.135 16.3213 17.1621C16.2798 17.2303 16.2195 17.3089 16.1426 17.373C16.0685 17.4347 15.983 17.4793 15.8789 17.4941C15.7828 17.5078 15.639 17.499 15.4326 17.4131L8.61328 11.9678C10.5095 10.1927 16.8516 4.25288 17.1592 3.9541C17.3177 3.79996 17.4519 3.62422 17.5205 3.43262C17.5884 3.24278 17.6171 2.93505 17.3799 2.69922C17.1678 2.48843 16.8871 2.48717 16.7139 2.51562C16.5698 2.53934 16.4235 2.59333 16.2803 2.66895L16.1387 2.75098L16.1299 2.75684L5.04297 10.0908L0.931641 8.64941L0.930664 8.64844H0.929687C0.927904 8.64771 0.925201 8.64692 0.921875 8.64551C0.911012 8.64089 0.892802 8.63236 0.870117 8.62109C0.823447 8.59791 0.761729 8.56324 0.701172 8.51855C0.567675 8.42001 0.509158 8.32733 0.5 8.25195V8.24609C0.500783 8.24327 0.504422 8.23438 0.514648 8.21875C0.538121 8.18297 0.584228 8.13534 0.65625 8.08398C0.725611 8.03454 0.801008 7.99427 0.861328 7.96582C0.890537 7.95205 0.914286 7.94179 0.929687 7.93555C0.937009 7.93258 0.942399 7.93079 0.945312 7.92969H0.946289V7.92871H0.948242L0.956055 7.92578L0.966797 7.9209L18.7295 0.663086L18.7393 0.65918L18.748 0.654297V0.655273C18.7492 0.654742 18.7514 0.652893 18.7549 0.651367C18.7621 0.648235 18.7742 0.643107 18.79 0.636719C18.8219 0.623845 18.8692 0.606636 18.9258 0.587891C19.0436 0.548851 19.1834 0.512896 19.3096 0.50293Z" fill="currentColor" stroke="currentColor"/></symbol>
+    <symbol id="i-wa" viewBox="0 0 19.9303 19.7978"><path d="M9.96547 0.5C12.4803 0.500083 14.8627 1.48836 16.651 3.27051C18.3226 4.93637 19.2443 7.12786 19.4079 9.41602L19.4303 9.875C19.4228 15.0768 15.1914 19.2918 9.96547 19.292C8.37777 19.292 6.85347 18.8966 5.45766 18.168L5.28676 18.0781L5.09926 18.1279L0.639299 19.2969L1.80629 14.9922L1.86098 14.792L1.75746 14.6123C0.962978 13.2267 0.499671 11.5759 0.499651 9.93066C0.499651 4.72233 4.73475 0.5 9.96547 0.5ZM6.89906 4.84766H6.41078C6.20737 4.84764 5.68558 4.83214 5.31508 5.32422C5.26281 5.39367 4.98451 5.69248 4.7809 6.05957C4.55958 6.45867 4.37764 6.9929 4.37758 7.70801C4.37758 8.44589 4.64262 9.13651 4.90492 9.64062C5.13118 10.0754 5.38181 10.4158 5.51918 10.5732C5.71679 10.8725 7.36408 13.3866 9.94985 14.4756H9.95082C10.5281 14.7632 11.0964 14.9339 11.3825 15.0479L11.4147 15.0605L11.4469 15.0684C12.075 15.2248 12.7022 15.2264 13.1832 15.1465L13.1823 15.1445C13.5254 15.0928 13.957 14.8985 14.3161 14.6631C14.6686 14.4319 15.0792 14.0806 15.2418 13.6484C15.363 13.3266 15.4248 13.02 15.4459 12.7568C15.4661 12.5052 15.4519 12.2565 15.3873 12.0635L15.3493 11.9512L15.2663 11.8682L15.1979 11.8076C15.1279 11.7513 15.0536 11.7072 14.9899 11.6719C14.901 11.6227 14.7866 11.5661 14.6539 11.5C14.4872 11.399 14.1313 11.2137 13.8122 11.0547C13.6268 10.9623 13.4396 10.8715 13.2848 10.7988C13.1429 10.7322 12.996 10.6653 12.9098 10.6367C12.8334 10.6113 12.6228 10.5329 12.403 10.5527C12.2744 10.5644 12.1385 10.6073 12.0143 10.6992C11.8942 10.7882 11.8093 10.9047 11.7487 11.0254C11.7073 11.1078 11.5847 11.2767 11.4254 11.4707C11.2915 11.6339 11.1612 11.777 11.0963 11.8447L11.0944 11.8438C10.7863 11.6903 10.0962 11.4457 9.18422 10.6689C8.54358 10.0881 8.11833 9.45651 7.95375 9.16797C7.99167 9.12944 8.02748 9.08573 8.05141 9.05566C8.0782 9.022 8.11174 8.97839 8.13832 8.94434C8.19922 8.86633 8.25227 8.80191 8.2975 8.75684C8.49996 8.55501 8.59979 8.34905 8.66957 8.20996C8.80993 7.9301 8.8099 7.62557 8.66957 7.3457L8.63344 7.27246L8.6227 7.26172C8.60737 7.22975 8.58666 7.18429 8.56117 7.12598C8.50482 6.997 8.43236 6.82335 8.35414 6.63281C8.20045 6.25843 8.0223 5.81436 7.91567 5.56641C7.78839 5.27046 7.6163 5.03503 7.35805 4.91797C7.13207 4.81561 6.8579 4.84766 6.89906 4.84766Z" fill="currentColor" stroke="currentColor"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 16 16"><path d="M2 11L8 5L14 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+    <symbol id="i-arr24" viewBox="0 0 24 24"><path d="M13.5 19.5L21 12L13.5 4.5M21 12H3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+    <symbol id="i-star" viewBox="0 0 26.6516 26.5976"><path d="M13.3265 21.6662L20.9615 26.5169C21.3372 26.7556 21.8141 26.4213 21.7178 25.9867L19.6825 16.803L26.4878 10.5973C26.8091 10.3043 26.6291 9.76922 26.1961 9.72992L17.2605 8.91884L13.7902 0.313008C13.6219 -0.104335 13.0311 -0.104336 12.8628 0.313006L9.39249 8.91884L0.455487 9.73004C0.0226731 9.76933 -0.15741 10.304 0.163447 10.5971L6.95649 16.803L4.9332 25.9885C4.83751 26.4229 5.31416 26.7566 5.68962 26.5181L13.3265 21.6662Z" fill="currentColor"/></symbol>
+    <symbol id="i-award" viewBox="0 0 62 28"><g fill="currentColor"><path d="M30.9144 0.341902C24.9529 0.341902 20.1108 5.20869 20.1108 11.2006C20.1108 17.1925 25.3694 20.1231 27.9987 23.2891C30.4979 26.3243 30.3677 27.6849 30.9144 27.6849C31.4611 27.6849 31.4871 26.3766 34.1425 23.2106C36.5635 20.3062 41.718 17.0617 41.718 11.1744C41.718 5.28719 36.8759 0.315737 30.9144 0.315737V0.341902ZM30.9144 15.0208C28.9099 15.0208 27.2958 13.3985 27.2958 11.3838C27.2958 9.36901 28.9099 7.74675 30.9144 7.74675C32.9189 7.74675 34.5329 9.36901 34.5329 11.3838C34.5329 13.3985 32.9189 15.0208 30.9144 15.0208Z"/><path d="M4.71597 0C4.71597 0 8.34101 1.65232 8.34101 4.95696C8.34101 8.26161 6.74173 9.91394 6.74173 9.91394C6.74173 9.91394 3.86302 8.26161 3.2233 5.44294C2.58359 2.62427 4.60935 0 4.60935 0H4.71597Z"/><path d="M4.9066 25.6642C4.9066 25.6642 7.46545 22.8455 10.9839 23.4287C14.5023 24.0119 15.995 25.8586 15.995 25.8586C15.995 25.8586 13.6494 28.0941 10.4508 27.9969C7.25221 27.8997 4.9066 25.567 4.9066 25.567V25.6642Z"/><path d="M0.529424 18.0962C0.529424 18.0962 3.94123 16.1523 7.03318 17.7074C10.1251 19.2625 10.9781 21.498 10.9781 21.498C10.9781 21.498 7.99275 22.9559 5.00742 21.984C2.02209 21.012 0.529424 18.0962 0.529424 18.0962Z"/><path d="M0.00644948 8.75387C0.00644948 8.75387 4.05797 8.55947 5.87049 11.3781C7.68301 14.1968 7.25654 16.4323 7.25654 16.4323C7.25654 16.4323 3.84473 16.4323 1.81897 14.1968C-0.206788 11.9613 0.00644948 8.85106 0.00644948 8.75387Z"/><path d="M57.2571 0C57.2571 0 53.6051 1.65209 53.6051 4.95629C53.6051 8.26048 55.2163 9.91259 55.2163 9.91259C55.2163 9.91259 58.1164 8.26048 58.7609 5.4422C59.4054 2.62391 57.3646 0 57.3646 0H57.2571Z"/><path d="M57.1934 25.6639C57.1934 25.6639 54.6154 22.8456 51.0708 23.4287C47.5262 24.0118 46.0224 25.8583 46.0224 25.8583C46.0224 25.8583 48.3855 28.0935 51.6079 27.9963C54.8303 27.8991 57.1934 25.5667 57.1934 25.5667V25.6639Z"/><path d="M61.4544 18.096C61.4544 18.096 58.0171 16.1524 54.9021 17.7073C51.7872 19.2622 50.9279 21.4974 50.9279 21.4974C50.9279 21.4974 53.9354 22.9551 56.943 21.9833C59.9506 21.0115 61.4544 18.096 61.4544 18.096Z"/><path d="M61.9934 8.75386C61.9934 8.75386 57.9117 8.55949 56.0857 11.3778C54.2597 14.1961 54.6893 16.4313 54.6893 16.4313C54.6893 16.4313 58.1265 16.4313 60.1674 14.1961C62.2082 11.9609 61.9934 8.85104 61.9934 8.75386Z"/></g></symbol>
+    <symbol id="i-user" viewBox="0 0 24 28"><g fill="currentColor"><path d="M12.2221 0.00367641C11.34 -0.0255116 10.461 0.119331 9.63483 0.429915C8.80892 0.740476 8.052 1.21073 7.40772 1.81378C6.76341 2.41682 6.24416 3.14088 5.87968 3.94461C5.51518 4.74832 5.31257 5.61597 5.28338 6.49799C5.25419 7.38001 5.39903 8.25915 5.70962 9.08523C6.02018 9.91114 6.49043 10.6681 7.09348 11.3123C7.6965 11.9568 8.42049 12.4758 9.22422 12.8405C10.028 13.2049 10.8958 13.4074 11.7777 13.4368C12.6598 13.4659 13.5388 13.321 14.3649 13.0105C15.1908 12.6998 15.9478 12.2296 16.592 11.6266C17.2365 11.0236 17.7555 10.2996 18.1202 9.49584C18.4846 8.69204 18.6871 7.82439 18.7165 6.94237C18.7456 6.06035 18.6007 5.18121 18.2902 4.35517C17.9795 3.52913 17.5093 2.77232 16.9063 2.12801C16.3033 1.48371 15.5793 0.96446 14.7755 0.59998C13.9718 0.235478 13.104 0.0328644 12.2221 0.00367641Z"/><path d="M12 17.1613C9.45986 17.1613 6.97646 17.9532 4.86383 19.4374C2.75112 20.9216 1.10391 23.0315 0.131017 25.5008C-0.0885944 26.0584 -0.0294868 26.6945 0.288524 27.1965C0.606557 27.6984 1.14151 28 1.71428 28H22.2857C22.8585 28 23.3933 27.6984 23.7115 27.1965C24.0294 26.6945 24.0886 26.0584 23.869 25.5008C22.8962 23.0315 21.2489 20.9216 19.1362 19.4374C17.0235 17.9532 14.5401 17.1613 12 17.1613Z"/></g></symbol>
+    <symbol id="i-ig" viewBox="0 0 20 20"><g fill="currentColor"><path d="M10 1.80723C12.6506 1.80723 13.0121 1.80723 14.0964 1.80723C15.0602 1.80723 15.5422 2.04819 15.9036 2.16868C16.3855 2.40964 16.747 2.53012 17.1084 2.89157C17.4699 3.25301 17.7108 3.61446 17.8313 4.09639C17.9518 4.45783 18.0723 4.93976 18.1928 5.90362C18.1928 6.98795 18.1928 7.22892 18.1928 10C18.1928 12.7711 18.1928 13.0121 18.1928 14.0964C18.1928 15.0602 17.9518 15.5422 17.8313 15.9036C17.5904 16.3855 17.4699 16.747 17.1084 17.1084C16.747 17.4699 16.3855 17.7108 15.9036 17.8313C15.5422 17.9518 15.0602 18.0723 14.0964 18.1928C13.0121 18.1928 12.7711 18.1928 10 18.1928C7.22892 18.1928 6.98795 18.1928 5.90362 18.1928C4.93976 18.1928 4.45783 17.9518 4.09639 17.8313C3.61446 17.5904 3.25301 17.4699 2.89157 17.1084C2.53012 16.747 2.28916 16.3855 2.16868 15.9036C2.04819 15.5422 1.92771 15.0602 1.80723 14.0964C1.80723 13.0121 1.80723 12.7711 1.80723 10C1.80723 7.22892 1.80723 6.98795 1.80723 5.90362C1.80723 4.93976 2.04819 4.45783 2.16868 4.09639C2.40964 3.61446 2.53012 3.25301 2.89157 2.89157C3.25301 2.53012 3.61446 2.28916 4.09639 2.16868C4.45783 2.04819 4.93976 1.92771 5.90362 1.80723C6.98795 1.80723 7.3494 1.80723 10 1.80723ZM10 0C7.22892 0 6.98795 0 5.90362 0C4.81928 0 4.09639 0.240965 3.49398 0.481928C2.89157 0.722892 2.28916 1.08434 1.68675 1.68675C1.08434 2.28916 0.843374 2.77109 0.481928 3.49398C0.240965 4.09639 0.120482 4.81928 0 5.90362C0 6.98795 0 7.3494 0 10C0 12.7711 0 13.0121 0 14.0964C0 15.1807 0.240965 15.9036 0.481928 16.506C0.722892 17.1084 1.08434 17.7108 1.68675 18.3133C2.28916 18.9157 2.77109 19.1566 3.49398 19.5181C4.09639 19.759 4.81928 19.8795 5.90362 20C6.98795 20 7.3494 20 10 20C12.6506 20 13.0121 20 14.0964 20C15.1807 20 15.9036 19.759 16.506 19.5181C17.1084 19.2771 17.7108 18.9157 18.3133 18.3133C18.9157 17.7108 19.1566 17.2289 19.5181 16.506C19.759 15.9036 19.8795 15.1807 20 14.0964C20 13.0121 20 12.6506 20 10C20 7.3494 20 6.98795 20 5.90362C20 4.81928 19.759 4.09639 19.5181 3.49398C19.2771 2.89157 18.9157 2.28916 18.3133 1.68675C17.7108 1.08434 17.2289 0.843374 16.506 0.481928C15.9036 0.240965 15.1807 0.120482 14.0964 0C13.0121 0 12.7711 0 10 0Z"/><path d="M10 4.81928C7.10843 4.81928 4.81928 7.10843 4.81928 10C4.81928 12.8916 7.10843 15.1807 10 15.1807C12.8916 15.1807 15.1807 12.8916 15.1807 10C15.1807 7.10843 12.8916 4.81928 10 4.81928ZM10 13.3735C8.19277 13.3735 6.62651 11.9277 6.62651 10C6.62651 8.19277 8.07229 6.62651 10 6.62651C11.8072 6.62651 13.3735 8.07229 13.3735 10C13.3735 11.8072 11.8072 13.3735 10 13.3735Z"/><path d="M15.3012 5.90362C15.9666 5.90362 16.506 5.3642 16.506 4.6988C16.506 4.03339 15.9666 3.49398 15.3012 3.49398C14.6358 3.49398 14.0964 4.03339 14.0964 4.6988C14.0964 5.3642 14.6358 5.90362 15.3012 5.90362Z"/></g></symbol>
+    <symbol id="i-vk" viewBox="0 0 20 14"><path d="M10.8932 14C4.05996 14 0.162399 8.74474 0 0H3.42286C3.53529 6.41842 6.05871 9.13714 8.05747 9.6977V0H11.2805V5.53553C13.2542 5.2973 15.3279 2.77477 16.0275 0H19.2505C18.9869 1.43908 18.4614 2.80165 17.7069 4.0025C16.9524 5.20335 15.9852 6.21663 14.8657 6.97898C16.1153 7.67555 17.2191 8.6615 18.1041 9.87175C18.9891 11.082 19.6353 12.489 20 14H16.4522C16.1248 12.6876 15.4594 11.5128 14.5394 10.6228C13.6194 9.73284 12.4858 9.16727 11.2805 8.997V14H10.8932V14Z" fill="currentColor"/></symbol>
+    <symbol id="i-arr" viewBox="0 0 19.5 16.5"><path d="M11.25 15.75L18.75 8.25L11.25 0.75M18.75 8.25H0.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></symbol>
+    <symbol id="i-exp" viewBox="0 0 24 24"><path d="M9 4H4v5M15 20h5v-5M20 9V4h-5M4 15v5h5M4 20l6.5-6.5M20 4l-6.5 6.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 90 112.5"><path d="M90 45.102C90 70.0112 47.9121 112.5 46.5 112.5C45.0879 112.5 0 70.0112 0 45.102C0 20.1929 20.1472 0 45 0C69.8528 0 90 20.1929 90 45.102Z" fill="#050505"/></symbol>
+  </defs>
+</svg>
+
+<!-- ════════ HEADER ════════ -->
+<header class="hdr" id="hdr">
+  <div class="wrap">
+    <div class="pill lg lg-hdr">
+      <a href="#top" class="brand" aria-label="ЛофтЭхо"></a>
+      <nav class="nav">
+        <a class="nl" href="index.html#rooms"><span>Залы</span></a>
+        <div class="dd">
+          <button class="nl"><span>Пакетные предложения</span><svg viewBox="0 0 16 16"><use href="#i-chev"/></svg></button>
+          <div class="ddm">
+            <a style="--i:0" href="paket-den-rozhdeniya.html">День рождения</a>
+            <a style="--i:1" href="paket-devichnik.html">Девичник</a>
+            <a style="--i:2" href="paket-korporativ.html">Корпоратив</a>
+            <a style="--i:3" href="paket-vecherinka.html">Для друзей</a>
+            <a style="--i:4" href="paket-romanticheskoe-svidanie.html">Романтическое свидание</a>
+            <a style="--i:5" href="paket-posledniy-zvonok.html">Выпускной</a>
+            <a style="--i:6" href="paket-lounge.html">Лаундж-комбо</a>
+            <a style="--i:7" href="paket-kino.html">Кино-комбо</a>
+            <a style="--i:8" href="paket-detskiy-den-rozhdeniya.html">Детский день рождения</a>
+          </div>
+        </div>
+        <a class="nl" href="index.html#offers"><span>Акции</span></a>
+        <a class="nl" href="index.html#combos"><span>Меню</span></a>
+      </nav>
+    </div>
+
+    <div class="pill r lg lg-hdr">
+      <div class="ci">
+        <a class="nl" href="tel:+78299347733"><span>8-829-934-77-33</span></a>
+        <small>г. Москва, Колокольников пер., 22, стр. 5</small>
+      </div>
+      <div class="soc">
+        <a class="ic ring" href="#" aria-label="Telegram"><svg viewBox="0 0 20 18"><use href="#i-tg"/></svg></a>
+        <a class="ic ring" href="#" aria-label="WhatsApp"><svg viewBox="0 0 20 20"><use href="#i-wa"/></svg></a>
+      </div>
+      <button class="btn btn-pink">Заказать звонок</button>
+    </div>
+
+    <button class="burger lg lg-hdr" id="burger" aria-label="Меню"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<nav class="mnav" id="mnav">
+  <a style="--i:0" href="index.html#rooms">Залы</a>
+  <a style="--i:1" href="index.html#combos">Пакетные предложения</a>
+  <a style="--i:2" href="index.html#offers">Акции</a>
+  <a style="--i:3" href="index.html#gallery">Галерея</a>
+  <a style="--i:4" href="#reviews">Отзывы</a>
+  <div class="mfoot">
+    <a href="tel:+78299347733" style="font-size:20px">8-829-934-77-33</a>
+    <small style="color:var(--w60);font-size:14px">г. Москва, Колокольников пер., 22, стр. 5</small>
+    <button class="btn btn-pink" style="align-self:flex-start">Заказать звонок</button>
+  </div>
+</nav>
+
+<!-- ════════ PACKAGE HERO ════════ -->
+<section class="hero pk-hero" id="top">
+  <div class="kbs" id="kbs"></div>
+  <div class="wrap"><h1 class="d in" id="heroH1">Устрой <em>романтическое свидание</em> в караоке-лофте в центре Москвы</h1></div>
+</section>
+
+<!-- ════════ PACKAGE PRICING ════════ -->
+<section class="sec" id="pricing" style="padding-top:var(--gap)">
+<div class="wrap">
+  <div class="shead rv" style="max-width:930px">
+    <div class="tb"><span class="label up">Комбо</span><h2 class="d h2 up"><em>Романтическое свидание</em> с девушкой в караоке<br><em>в центре Москвы</em></h2></div>
+    <p class="sub up" style="max-width:335px">При покупке любого пакетного предложения <em>пробковый сбор отменяется</em></p>
+  </div>
+  <div class="pk-grid"><article class="pk-card l1 rv up"><div class="pk-head"><h3 class="d">Романтическое свидание</h3><div class="pk-tags"><span class="tag">До 2 гостей</span><span class="tag">3 часа</span></div></div><div class="pk-prices"><div class="pk-price"><div class="t">Пн–чт</div><div class="row"><b class="d">14&nbsp;500&nbsp;₽</b><s class="d">21&nbsp;000&nbsp;₽</s></div></div><div class="pk-price"><div class="t">Пт–вс</div><div class="row"><b class="d">20&nbsp;000&nbsp;₽</b><s class="d">21&nbsp;000&nbsp;₽</s></div></div></div><button class="btn btn-pink">Оформить</button><div class="pk-list"><h4>Что включает</h4><ul><li>Скидка 60% на паровой коктейль</li><li>1 кг роллов (можно заменить)</li><li>Фруктовая тарелка</li><li>Сладкое ассорти (можно заменить)</li><li>Напитки на выбор: бутылка игристого / чайник чая / графин лимонада</li><li>Романтическая обстановка: свечи, лепестки роз</li><li>10 гелиевых шаров</li></ul></div></article></div>
+  <div class="pk-common rv up"><p>Можно со своей едой и напитками без доплат. Посуду и бокалы предоставим!</p><h4>Во всех залах</h4><ul><li>Караоке AST-50 (2 микрофона, 60 000+ песен) и YouTube</li><li>Full HD экраны до 4 метров и профессиональная акустика</li><li>PlayStation 5 с играми (подробности у администратора)</li><li>Быстрый Wi-Fi</li><li>Огромная фильмотека</li><li>Популярные настольные игры: «Мафия», «Монополия», «Уно», «Имаджинариум», «Бункер» и другие</li><li>Посуда, обслуживание и уборка уже включены в стоимость</li></ul></div>
+</div>
+</section>
+<!-- ════════ ABOUT / FEATURES ════════ -->
+<section class="sec" id="about">
+  <div class="wrap">
+    <div class="shead rv" style="max-width:966px">
+      <div class="tb">
+        <span class="label up">О караоке</span>
+        <h2 class="d h2">
+          <span class="l"><i style="--d:60ms">Караоке-лофт с <em class="y" style="font-style:normal">отдельными комнатами</em></i></span>
+          <span class="l"><i style="--d:150ms">аренда в Москве</i></span>
+        </h2>
+      </div>
+      <p class="sub up" style="--d:280ms;max-width:335px">Больше, чем просто<br>караоке-лофт в центре</p>
+    </div>
+  </div>
+
+  <div class="wrap" style="margin-top:48px">
+    <div class="feats-track" id="featsTrack">
+      <div class="feats-sticky">
+        <div class="fg">
+          <!-- порядок и фото по Figma: оборудование → комфорт и атмосфера → еда -->
+          <div class="fg-media" id="fgMedia" data-fx="feat1,feat-comfort,feat2">
+            <div class="fg-img on" style="background-image:var(--i-feat1)"></div>
+            <div class="fg-img" style="background-image:var(--i-feat-comfort)"></div>
+            <div class="fg-img" style="background-image:var(--i-feat2)"></div>
+            <div class="fg-shade"></div>
+            <div class="fg-shade2"></div>
+          </div>
+
+          <div class="fg-card lg">
+            <div class="fg-list">
+              <div class="on">
+                <div class="fi"><b>Профессиональная караоке-система АСТ-50B и 2 микрофона</b><span>Можно включать песни с YouTube</span></div>
+                <div class="fi"><b>Игровые консоли</b><span>PlayStation 5 уже включены в стоимость, можно приносить свои диски</span></div>
+                <div class="fi"><b>Современное оборудование</b><span>Объёмный звук, приставки и Apple TV</span></div>
+              </div>
+              <div><!-- текст из Figma (блок «Комфорт и атмосфера», 2026-10-18) -->
+                <div class="fi"><b>Украшаем залы</b><span>Дополнительно украсим зал в&nbsp;соответствии с&nbsp;вашими пожеланиями</span></div>
+                <div class="fi"><b>Мягкие диваны, пуфы и&nbsp;большие экраны</b><span>Есть всё для комфортного отдыха</span></div>
+                <div class="fi"><b>Отдельные залы с&nbsp;ярким дизайном</b><span>5&nbsp;тематических комнат для любой компании от&nbsp;2-х до&nbsp;13-ти человек. Подойдут для вашего события</span></div>
+              </div>
+              <div>
+                <div class="fi"><b>Ароматные чаи, закуски, напитки</b><span>И многое другое можно заказать прямо в зал</span></div>
+                <div class="fi"><b>Еду и напитки можно с собой</b><span>Мы бесплатно предоставим посуду, необходимую для мероприятия</span></div>
+                <div class="fi"><b>Подарки при бронировании</b><span>Всегда радуем гостей подарками</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="fg-cap d h5">
+            <span class="on">Профессиональное оборудование</span>
+            <span>Комфорт и атмосфера</span>
+            <span>Еда, напитки и приятные бонусы</span>
+          </div>
+          <div class="fg-bars">
+            <div class="bar"><i></i></div><div class="bar"><i></i></div><div class="bar"><i></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ REVIEWS ════════ -->
+<section class="sec" id="reviews">
+  <div class="wrap">
+    <div class="shead rv" style="max-width:567px">
+      <div class="tb">
+        <h2 class="d h2"><span class="l"><i><em class="y" style="font-style:normal">О нас</em> говорят</i></span></h2>
+      </div>
+    </div>
+  </div>
+  <div class="rev-view" id="revView" style="margin-top:40px">
+    <div class="rev-photos" id="revPhotos"></div>
+    <div class="rev-cards" id="revCards"></div>
+  </div>
+  <div class="wrap">
+    <div class="rev-ctl">
+      <div class="dots" id="revDots"></div>
+      <div class="arrows">
+        <a class="btn lg lg-w15" id="revAll" target="_blank" rel="noopener"
+           href="https://yandex.ru/maps/?text=%D0%9A%D0%B0%D1%80%D0%B0%D0%BE%D0%BA%D0%B5%20%D0%9B%D0%BE%D1%84%D1%82%D0%AD%D1%85%D0%BE%20%D0%9A%D0%BE%D0%BB%D0%BE%D0%BA%D0%BE%D0%BB%D1%8C%D0%BD%D0%B8%D0%BA%D0%BE%D0%B2%20%D0%BF%D0%B5%D1%80%2022">Читать все отзывы</a>
+        <div style="display:flex;gap:24px">
+          <button class="arr ring-30" id="revPrev" aria-label="Назад"><svg viewBox="0 0 19.5 16.5" style="transform:rotate(180deg)"><use href="#i-arr"/></svg></button>
+          <button class="arr ring-30" id="revNext" aria-label="Вперёд"><svg viewBox="0 0 19.5 16.5"><use href="#i-arr"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SEO ════════ -->
+<section class="sec">
+  <div class="wrap seo rv">
+    <h2 class="d h2 up" style="grid-column:1">
+      <span class="y">Что такое караоке-лофт </span>с отдельными комнатами в центре Москвы?
+    </h2>
+    <div class="seo-r up" style="--d:160ms" id="seoWrap">
+      <div class="seo-body" id="seoBody">
+        <div id="seoInner">
+          <p>Караоке лофт с отдельными комнатами — это уникальное и комфортабельное решение для тех, кто хочет насладиться пением в приватной обстановке, без посторонних глаз. В Москве эта концепция становится все более популярной, поскольку многие люди ищут возможность провести время с друзьями, коллегами или любимыми в уединённой атмосфере. Караоке с индивидуальными комнатами позволяет создать неповторимый настрой для вечеринки, корпоративного мероприятия или просто весёлого вечера. В этой статье мы подробно рассмотрим все аспекты аренды караоке лофтов, удобства, доступные опции и преимущества таких заведений.</p>
+          <p>Караоке лофт с отдельными комнатами — это заведение, предлагающее аренду приватных комнат для пения. В таких лофтах у вас есть возможность не только петь в компании друзей, но и отдохнуть от посторонних людей, наслаждаясь комфортом и уютом. Каждая комната оснащена всем необходимым для качественного караоке: от современных аудиосистем до шикарного освещения и удобной мебели. Это делает такой формат идеальным для тех, кто не хочет, чтобы их развлекательный процесс мешали другие посетители.</p>
+          <p>В отличие от традиционных караоке-баров, где в одной общей зоне находятся все гости, караоке лофт предлагает уединение и свободу действий. Вы можете петь, веселиться и даже устроить танцевальный баттл, не беспокоясь, что вас будут отвлекать.</p>
+          <h3>Преимущества аренды лофт-караоке с отдельными комнатами (кабинками)</h3>
+          <ul>
+            <li><b>Приватность:</b> основное преимущество караоке лофтов с отдельными комнатами — это возможность петь в уединении с друзьями или коллегами. Не нужно переживать о том, что кто-то будет смотреть на вас, когда вы поёте любимую песню.</li>
+            <li><b>Удобство и комфорт:</b> каждая комната оснащена качественной аудиотехникой, телевизорами или проекторами для отображения текста песен, а также стильной мебелью. Вы можете чувствовать себя как дома, наслаждаясь уютом и атмосферой.</li>
+            <li><b>Большой выбор репертуара:</b> в караоке лофтах обычно есть огромный выбор песен на различных языках, включая самые актуальные хиты и классику. Благодаря этому каждый посетитель может найти свою любимую песню, будь то рок, поп, хип-хоп или даже джаз.</li>
+            <li><b>Гибкость по времени:</b> караоке лофт можно арендовать на любое время суток — будь то вечерняя встреча с друзьями или вечерний корпоратив. Вы также можете выбрать длительность аренды — от нескольких часов до целой ночи.</li>
+            <li><b>Разнообразие комнат:</b> в караоке лофтах часто предлагают разные типы комнат — от маленьких уютных кабин до просторных залов, вмещающих большие компании. Вы можете выбрать именно тот формат, который подходит вам.</li>
+            <li><b>Дополнительные услуги:</b> некоторые караоке лофты предлагают дополнительные услуги, такие как доставка еды, напитков, DJ, аниматоры или даже организация тематических вечеринок. Это превращает обычное караоке в полноценный праздник.</li>
+          </ul>
+          <h3>Почему вам стоит снять зал в аренду в нашем лофт-караоке в Москве?</h3>
+          <p>Выбор идеального караоке лофта зависит от ваших требований и предпочтений. Чтобы сделать правильный выбор, стоит обратить внимание на несколько ключевых моментов, которые помогут вам найти лучший вариант для вашего мероприятия:</p>
+          <ul>
+            <li><b>Расположение:</b> в Москве есть несколько районов, где сосредоточены лучшие караоке лофты с отдельными комнатами. Если для вас важна близость к центру города, выберите лофты в таких районах, как Арбат, Тверская или Китай-город. Эти места обеспечат не только удобный доступ, но и высокое качество обслуживания.</li>
+            <li><b>Цена аренды:</b> стоимость аренды зависит от множества факторов — времени суток, длительности аренды, уровня заведения и дополнительных услуг. Важно заранее уточнить стоимость аренды, чтобы не оказаться в ситуации, когда цена окажется выше вашего бюджета.</li>
+            <li><b>Качество оборудования:</b> один из важнейших аспектов — это качество аудиосистемы и всей аппаратуры. Современные караоке лофты предлагают устройства последнего поколения, чтобы ваш опыт был максимально приятным. Убедитесь, что оборудование соответствует вашим ожиданиям.</li>
+            <li><b>Наличие удобств:</b> некоторые караоке лофты предлагают дополнительные удобства — например, наличие баров с напитками, еды, фотозон или даже аренду костюмов для тематических вечеринок. Убедитесь, что заведение предлагает все необходимое для комфортного отдыха.</li>
+            <li><b>Отзывы клиентов:</b> прежде чем забронировать комнату, обязательно ознакомьтесь с отзывами других посетителей. Это поможет вам понять, насколько заведение соответствует заявленным характеристикам и обеспечивает ли достойное обслуживание.</li>
+          </ul>
+          <p>Аренда караоке лофта с отдельными комнатами в Москве — это отличный способ провести время с друзьями, коллегами или близкими. Приватные кабинеты, современное оборудование и комфортная атмосфера сделают ваш вечер незабываемым. Независимо от того, планируете ли вы корпоративное мероприятие, день рождения или просто хотите провести вечер в компании, караоке лофт предоставит вам все возможности для отличного отдыха.</p>
+        </div>
+        <div class="seo-fade"></div>
+      </div>
+      <button class="seo-tg" id="seoTg"><span>Читать полностью</span> <svg viewBox="0 0 16 16"><use href="#i-chev"/></svg></button>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ MAP — real OpenStreetMap tiles, restyled to the Figma palette ════════ -->
+<section style="margin-top:calc(var(--gap)/2)">
+  <div class="mapwrap" id="mapwrap">
+    <div class="mapview" id="mapview">
+      <div class="maplayer" id="maplayer"></div>
+      <div class="pin" id="mapPin"><svg width="90" height="112.5" viewBox="0 0 90 112.5" style="position:absolute;inset:0"><use href="#i-pin"/></svg><i><div></div></i></div>
+    </div>
+    <div class="mapctl">
+      <button class="lg lg-panel" id="mapIn" aria-label="Приблизить">+</button>
+      <button class="lg lg-panel" id="mapOut" aria-label="Отдалить">−</button>
+    </div>
+    <div class="mapattr">© OpenStreetMap contributors</div>
+    <div class="wrap"><div class="mapcard lg lg-panel rv up">
+      <h3 class="d h5 y">Ждём в гости!</h3>
+      <div class="mc-row"><div class="k">График работы:</div><div class="v">Ежедневно с 12:00 и до последнего гостя</div></div>
+      <div class="mc-row"><div class="k">Телефон:</div><div class="v"><a href="tel:+78299347733">8-829-934-77-33</a></div></div>
+      <div class="mc-row"><div class="k">Метро:</div><div class="v">м. Цветной бульвар<br>м. Трубная<br>м. Чистые пруды/Сретенский бульвар/Тургеневская</div></div>
+      <div class="mc-row"><div class="k">Адрес:</div><div class="v">г. Москва, Колокольников пер., 22, стр. 5.<br>Вход справа от вывески, цокольный этаж</div></div>
+      <a class="btn lg lg-w15 maplink" target="_blank" rel="noopener"
+         href="https://yandex.ru/maps/?pt=37.629301,55.767908&amp;z=17&amp;l=map">Открыть в Яндекс.Картах</a>
+    </div></div>
+  </div>
+</section>
+
+<!-- ════════ FOOTER ════════ -->
+<footer class="rv">
+  <div class="flogo up"></div>
+  <div class="fbar">
+    <div class="fgroup">
+      <div class="fsoc up">
+        <a class="ring" href="#" aria-label="Instagram"><svg width="24" height="24" viewBox="0 0 20 20" style="color:var(--white)"><use href="#i-ig"/></svg></a>
+        <a class="ring" href="#" aria-label="VK"><svg width="24" height="17" viewBox="0 0 20 14" style="color:var(--white)"><use href="#i-vk"/></svg></a>
+      </div>
+      <p class="fnote up" style="--d:80ms">*Социальная сеть Инстаграм запрещена на территории РФ</p>
+    </div>
+    <div class="fgroup">
+      <a class="nl fpol up" style="--d:160ms" href="#"><span>Политика конфиденциальности</span></a>
+      <p class="fleg up" style="--d:220ms">ИП Букреева Анна Алексеевна<br>ИНН 744514422500<br>ОГРНИП 323745600038900</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ════════ MODAL: ROOM DETAILS ════════ -->
+<div class="mod" id="modRoom" role="dialog" aria-modal="true">
+  <div class="mod-bd" data-close></div>
+  <div class="mod-in">
+    <div class="mod-bg" id="rdBg"></div>
+    <button class="mod-x lg lg-panel" data-close aria-label="Закрыть"><svg width="24" height="24"><use href="#i-x"/></svg></button>
+    <!-- Figma: Modal/Room Details (по одному на зал, данные — ROOMS в скрипте) -->
+    <div class="rd-shade"></div>
+    <div class="rd-panel">
+      <div class="gl lg lg-panel rd-head">
+        <h3 class="d h3" id="rdTitle">—</h3>
+        <div class="tags" id="rdTags"></div>
+      </div>
+      <div class="rd-prices">
+        <div class="gl lg lg-panel rd-p">
+          <div class="k">Аренда зала</div>
+          <div class="rd-rows" id="rdRent"></div>
+        </div>
+        <div class="gl lg lg-panel rd-p">
+          <div class="k">Цена за гостя</div>
+          <span class="badge rd-badge">Акция</span>
+          <div class="rd-rows" id="rdGuest"></div>
+        </div>
+      </div>
+      <div class="gl lg lg-panel rd-book">
+        <button class="btn btn-pink">Оформить бронь</button>
+        <small>Минимум: 2&nbsp;часа • 2&nbsp;гостя</small>
+      </div>
+      <div class="gl lg lg-panel rd-eq">
+        <div class="rd-feat">
+          <b>Оснащение зала:</b>
+          <ul>
+            <li>проектор с&nbsp;разрешением Full HD</li>
+            <li>профессиональный объёмный звук</li>
+            <li>караоке-система АСТ-50B на&nbsp;2&nbsp;микрофона</li>
+            <li>игровая приставка PlayStation 5 (подробности у&nbsp;администратора)</li>
+            <li>мультимедийные приставки Apple TV и&nbsp;Mi Box</li>
+          </ul>
+        </div>
+        <div class="rd-extra">
+          <p>По желанию предоставляем посуду и&nbsp;всё необходимое для комфорта</p>
+          <small>Подробности уточнять у&nbsp;администратора</small>
+        </div>
+      </div>
+    </div>
+    <div class="rd-tools">
+      <div class="rd-thumbs" id="rdThumbs"></div>
+      <button class="rd-exp lg lg-panel" id="rdExp" aria-label="Во весь экран"><svg width="32" height="32"><use href="#i-exp"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ MODAL: GALLERY FULLSCREEN ════════ -->
+<div class="mod" id="modGal" role="dialog" aria-modal="true">
+  <div class="mod-bd" data-close></div>
+  <div class="mod-in">
+    <div class="mod-bg" id="gfBg"></div>
+    <button class="mod-x lg lg-panel" data-close aria-label="Закрыть"><svg width="24" height="24"><use href="#i-x"/></svg></button>
+    <!-- Figma: Modal/Gallery Fullscreen — на десктопе только «закрыть» и миниатюры (стрелки скрыты стилями, остаются для мобильной) -->
+    <button class="gf-nav gf-prev lg lg-panel" id="gfPrev" aria-label="Назад"><svg width="20" height="20" viewBox="0 0 19.5 16.5" style="transform:rotate(180deg)"><use href="#i-arr"/></svg></button>
+    <button class="gf-nav gf-next lg lg-panel" id="gfNext" aria-label="Вперёд"><svg width="20" height="20" viewBox="0 0 19.5 16.5"><use href="#i-arr"/></svg></button>
+    <div class="rd-tools gf-tools"><div class="rd-thumbs" id="gfThumbs"></div></div>
+  </div>
+</div>
+
+<style>
+.fx-on .fg-img,.fx-on .rp{display:none}
+</style>
+<script>
+(function(){
+'use strict';
+var $ = function(s,c){return (c||document).querySelector(s)};
+var $$ = function(s,c){return [].slice.call((c||document).querySelectorAll(s))};
+var clamp = function(v,a,b){return v<a?a:v>b?b:v};
+var RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+var img = function(n){return 'var(--i-'+n+')'};
+var ROOT = getComputedStyle(document.documentElement);
+var srcCache = {};
+function src(name){
+  if(srcCache[name]) return srcCache[name];
+  var v = ROOT.getPropertyValue('--i-'+name).trim();
+  var m = v.match(/url\((?:"|')?(.*?)(?:"|')?\)/);
+  return (srcCache[name] = m ? m[1] : '');
+}
+
+/* ═══════════ HEADER DROPDOWN ═══════════
+   наведение открывает, уход курсора закрывает (если меню не закреплено);
+   1-й щелчок — открыть и закрепить, 2-й щелчок — закрыть;
+   щелчок мимо, Esc, выбор пункта — закрывают */
+$$('.dd').forEach(function(dd){
+  var btn = $('.nl', dd), t = 0, pinned = false;
+  function set(on){ clearTimeout(t); if(!on) pinned = false; dd.classList.toggle('open', on); btn.setAttribute('aria-expanded', on) }
+  btn.setAttribute('aria-haspopup', 'true'); btn.setAttribute('aria-expanded', 'false');
+  btn.addEventListener('click', function(e){ e.preventDefault(); if(pinned) set(false); else { set(true); pinned = true } });
+  dd.addEventListener('pointerenter', function(e){ if(e.pointerType === 'mouse') set(true) });
+  dd.addEventListener('pointerleave', function(e){ if(e.pointerType === 'mouse' && !pinned){ clearTimeout(t); t = setTimeout(function(){ set(false) }, 180) } });
+  $$('.ddm a', dd).forEach(function(a){ a.addEventListener('click', function(){ set(false) }) });
+  document.addEventListener('click', function(e){ if(!dd.contains(e.target)) set(false) });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && dd.classList.contains('open')){ set(false); btn.focus() } });
+});
+
+/* ═══════════ DATA ═══════════ */
+var ROOMS = [
+ {name:'Зал космос',  no:'Зал № 1', area:'21', guests:'До 13 гостей', guest:'от 650', rent:'от 3 800',
+  rentA:'3 800', rentB:'4 500', guestA:'650', screen:'4',   /* окно зала — по Figma */
+  slides:['r-kosmos-1','r-kosmos-2','r-kosmos-3']},
+ {name:'Зал лава',    no:'Зал № 2', area:'18', guests:'До 12 гостей', guest:'от 650', rent:'от 3 500',
+  rentA:'3 500', rentB:'4 300', guestA:'650', screen:'3',
+  slides:['r-lava-1','r-lava-2','r-lava-3','r-lava-4','r-lava-5']},
+ {name:'Зал тропики', no:'Зал № 3', area:'16', guests:'До 10 гостей', guest:'от 650', rent:'от 3 000',
+  rentA:'3 000', rentB:'3 800', guestA:'650', screen:'2,5',
+  slides:['r-tropiki-1','r-tropiki-2','r-tropiki-3','r-tropiki-4']},
+ {name:'Зал лагуна',  no:'Зал № 4', area:'17', guests:'До 10 гостей', guest:'от 650', rent:'от 3 000',
+  rentA:'3 000', rentB:'3 800', guestA:'650', screen:'2,5',
+  slides:['r-laguna-1','r-laguna-2','r-laguna-3','r-laguna-4','r-laguna-5']},
+ {name:'Зал Эйфория', no:'Зал № 5', area:'9',  guests:'До 6 гостей',  guest:'от 650', rent:'от 2 600',
+  rentA:'2 600', rentB:'3 250', guestA:'650', screen:'2,5',
+  slides:['r-euphoria-1','r-euphoria-2','r-euphoria-3']}
+];
+var COMBOS = [
+ {t:'День рождения в караоке', i:'c1', u:'den-rozhdeniya'}, {t:'Романтическое свидание', i:'c2', u:'romanticheskoe-svidanie'},
+ {t:'Караоке для друзей',      i:'c3', u:'vecherinka'},     {t:'Девичник',               i:'c4', u:'devichnik'},
+ {t:'Корпоратив',              i:'c5', u:'korporativ'},     {t:'Лаундж-комбо в караоке',  i:'c6', u:'lounge'},
+ {t:'Кино-комбо в караоке',    i:'c1', u:'kino'},           {t:'Последний звонок',        i:'c8', u:'posledniy-zvonok'},
+ {t:'Детский день рождения',   i:'c9', u:'detskiy-den-rozhdeniya'}
+];
+var GAL_ROWS = [
+ ['g1','g2','g3','g4','g5'],
+ ['g6','g7','g8','g9','g10','g11'],
+ ['g12','g13','g14','g15','g16','g3']
+];
+var GAL_ALL = ['g1','g2','g3','g4','g5','g6','g7','g8','g9','g10','g11','g12','g13','g14','g15','g16'];
+var REVIEWS = [
+ {n:'Николай', r:'Зал Космос', av:'av1', p:'rev1',
+  t:'Решили отпраздновать компанией и поздравить наших девушек с 8 марта в этом месте. Брали зал «космос». Чисто не пахнет, уютно и достаточно было места для компании из 8 человек. Мягкие диваны, опрятные. Уже хорошее впечатление создалось когда зашли в зал. Минус в том, что кондиционер не справлялся и было немного душно. Больше минусов не нашёл. Сервис присутствует, есть кнопка вызова администратора.'},
+ {n:'Надежда Береза', r:'Зал Лава', av:'av2', p:'rev2',
+  t:'Праздновали день рождения в зале Лава. Хороший зал! Чисто, уютно, атмосферно. Брали вместе в едой — пиццы, закуски, компот, фрукты — всё свежее, вкусное! Торт и поздравления шикарны. Звук хороший. Кондиционер отличный) Хороший администратор — вежливый, приятный. Клуб маленький, но очень уютный. Рекомендую 👍'},
+ {n:'Светлана Рыбина', r:'День рождения', av:'av2', p:'rev3',
+  t:'Прекрасное место! Отмечала свой ДР, осталась в восторге! Ребята молодцы! Новые уютные комнаты, прекрасный звук с отличной шумоизоляцией! Новая аппаратура!) Соотношение цена-качество просто супер, есть с чем сравнить) Вернёмся ещё не один раз! Так держать!'}
+];
+
+/* ═══════════ WEBGL IMAGE TRANSITION ═══════════
+   простой плавный наплыв (cross-fade) — по её просьбе вместо растворения по шуму со вспышкой */
+var VS = 'attribute vec2 p;varying vec2 v;void main(){v=p*0.5+0.5;gl_Position=vec4(p,0.,1.);}';
+var FS = [
+'precision highp float;',
+'uniform sampler2D uA,uB;uniform vec2 uRes,uAR,uBR;uniform float uP,uSeed;varying vec2 v;',
+'vec2 cover(vec2 uv,vec2 r,vec2 i){float ra=r.x/r.y,ia=i.x/i.y;',
+'  vec2 s=ra<ia?vec2(ra/ia,1.):vec2(1.,ia/ra);return (uv-0.5)*s+0.5;}',
+'float hs(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
+'float nz(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);',
+'  return mix(mix(hs(i),hs(i+vec2(1,0)),f.x),mix(hs(i+vec2(0,1)),hs(i+vec2(1,1)),f.x),f.y);}',
+'float fbm(vec2 p){return nz(p)*0.6+nz(p*2.03)*0.27+nz(p*4.11)*0.13;}',
+'void main(){',
+' vec4 ca=texture2D(uA,cover(v,uRes,uAR));',
+' vec4 cb=texture2D(uB,cover(v,uRes,uBR));',
+' gl_FragColor=vec4(mix(ca.rgb,cb.rgb,uP),1.0);',
+'}'].join('\n');
+
+function Fx(host, names){
+  this.host = host; this.names = names; this.i = 0; this.ok = false;
+  this.p = 0; this.dur = 900; this.t = 0; this.busy = false;
+  var cv = this.cv = document.createElement('canvas');
+  var gl = null;
+  try{ gl = cv.getContext('webgl',{antialias:false,alpha:false,depth:false,stencil:false,
+        powerPreference:'low-power'}) || cv.getContext('experimental-webgl'); }catch(e){}
+  if(!gl) return;
+  function sh(t,s){var o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);
+    return gl.getShaderParameter(o,gl.COMPILE_STATUS)?o:null}
+  var vs = sh(gl.VERTEX_SHADER,VS), fs = sh(gl.FRAGMENT_SHADER,FS);
+  if(!vs||!fs) return;
+  var pr = gl.createProgram(); gl.attachShader(pr,vs); gl.attachShader(pr,fs); gl.linkProgram(pr);
+  if(!gl.getProgramParameter(pr,gl.LINK_STATUS)) return;
+  gl.useProgram(pr);
+  var buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+  var loc = gl.getAttribLocation(pr,'p');
+  gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+  this.gl = gl; this.pr = pr; this.ok = true;
+  this.u = {A:gl.getUniformLocation(pr,'uA'),B:gl.getUniformLocation(pr,'uB'),
+    res:gl.getUniformLocation(pr,'uRes'),ar:gl.getUniformLocation(pr,'uAR'),
+    br:gl.getUniformLocation(pr,'uBR'),p:gl.getUniformLocation(pr,'uP'),
+    seed:gl.getUniformLocation(pr,'uSeed')};
+  gl.uniform1i(this.u.A,0); gl.uniform1i(this.u.B,1);
+  gl.uniform1f(this.u.seed, (names.length*7.13)%10);
+  this.tex = {};
+  host.insertBefore(cv, host.firstChild);
+  host.classList.add('fx-on');
+  var self = this;
+  this.load(names[0], function(){ self.a = self.tex[names[0]]; self.b = self.a; self.resize(); self.draw(); });
+  names.slice(1).forEach(function(n){ self.load(n) });
+}
+Fx.prototype.load = function(name, cb){
+  var self = this, gl = this.gl;
+  if(this.tex[name]){ cb && cb(); return; }
+  var im = new Image();
+  im.onload = function(){
+    var t = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D,t);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,im);
+    self.tex[name] = {t:t,w:im.naturalWidth,h:im.naturalHeight};
+    cb && cb();
+  };
+  im.src = src(name);
+};
+Fx.prototype.resize = function(){
+  var r = this.host.getBoundingClientRect();
+  if(!r.width || !r.height) return;
+  var dpr = Math.min(devicePixelRatio||1, 2);
+  var w = Math.round(r.width*dpr), h = Math.round(r.height*dpr);
+  if(this.cv.width===w && this.cv.height===h) return;
+  this.cv.width = w; this.cv.height = h;
+  this.gl.viewport(0,0,w,h);
+  this.gl.uniform2f(this.u.res,w,h);
+  this.dirty = true;
+};
+Fx.prototype.draw = function(){
+  var gl = this.gl; if(!this.a || !this.b) return;
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,this.a.t);
+  gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,this.b.t);
+  gl.uniform2f(this.u.ar,this.a.w,this.a.h);
+  gl.uniform2f(this.u.br,this.b.w,this.b.h);
+  gl.uniform1f(this.u.p,this.p);
+  gl.drawArrays(gl.TRIANGLES,0,3);
+};
+Fx.prototype.set = function(i){
+  if(i===this.i) return; var self = this, name = this.names[i];
+  this.i = i;
+  if(!this.ok){ return; }
+  this.load(name, function(){
+    var t = self.tex[name]; if(!t) return;
+    if(RM){ self.a = t; self.b = t; self.p = 0; self.resize(); self.draw(); return; }
+    /* смена посреди перехода: если новое фото уже проявилось больше чем наполовину — считаем его текущим,
+       чтобы картинка не прыгала назад */
+    if(self.busy && self.p >= .5) self.a = self.b;
+    self.b = t; self.p = 0; self.t = 0; self.busy = true;
+  });
+};
+Fx.prototype.tick = function(dt){
+  if(!this.ok) return;
+  if(this.dirty){ this.dirty = false; this.draw(); }
+  if(!this.busy) return;
+  this.t += dt;
+  var k = clamp(this.t/this.dur,0,1);
+  this.p = -(Math.cos(Math.PI*k) - 1) / 2;   /* easeInOutSine — мягкий старт и финиш */
+  this.draw();
+  if(k>=1){ this.busy = false; this.a = this.b; this.p = 0; this.draw(); }
+};
+
+/* ═══════════ REVEAL ═══════════ */
+var io = new IntersectionObserver(function(es){
+  es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+},{rootMargin:'0px 0px -12% 0px',threshold:.08});
+function watch(root){ $$('.rv',root).forEach(function(el){io.observe(el)}); }
+
+/* ═══════════ HEADER ═══════════ */
+var hdr = $('#hdr'), lastY = 0;
+$('#burger').addEventListener('click', function(){
+  document.body.classList.toggle('mopen');
+  document.body.classList.toggle('locked', document.body.classList.contains('mopen'));
+});
+$$('#mnav a').forEach(function(a){ a.addEventListener('click', function(){
+  document.body.classList.remove('mopen','locked');
+});});
+
+/* ═══════════ HERO ═══════════ */
+var kbs = $('#kbs'), heroH1 = $('#heroH1'), metrics = $('.metrics');
+requestAnimationFrame(function(){ document.body.classList.add('loaded'); });
+
+var nf = new Intl.NumberFormat('ru-RU');
+function fmt(v,f){
+  if(f==='dec') return v.toFixed(1);
+  if(f==='rub') return nf.format(Math.round(v)).replace(/ /g,' ')+' ₽';
+  if(f==='plus') return Math.round(v)+'+';
+  if(f==='do') return 'до '+Math.round(v);
+  return String(Math.round(v));
+}
+var mio = new IntersectionObserver(function(es){
+  es.forEach(function(e){
+    if(!e.isIntersecting) return; mio.unobserve(e.target);
+    var el = e.target, to = parseFloat(el.dataset.num), f = el.dataset.fmt, t0 = null, D = 1500;
+    if(RM){ el.textContent = fmt(to,f); return; }
+    (function step(t){
+      if(!t0) t0 = t;
+      var p = clamp((t-t0)/D,0,1), e2 = 1-Math.pow(2,-10*p);
+      el.textContent = fmt(to*e2, f);
+      if(p<1) requestAnimationFrame(step); else el.textContent = fmt(to,f);
+    })(performance.now());
+  });
+},{threshold:.4});
+$$('[data-num]').forEach(function(el){ mio.observe(el) });
+
+/* ═══════════ MAGNETIC BUTTONS ═══════════ */
+$$('.mag').forEach(function(el){
+  if(RM) return;
+  el.addEventListener('pointermove', function(e){
+    var r = el.getBoundingClientRect();
+    el.style.transform = 'translate('+((e.clientX-r.left-r.width/2)*.16)+'px,'+((e.clientY-r.top-r.height/2)*.28)+'px)';
+  });
+  el.addEventListener('pointerleave', function(){ el.style.transform = ''; });
+});
+
+/* ═══════════ FEATURES ═══════════ */
+var fTrack = $('#featsTrack'),
+    fMedia = $('#fgMedia'),
+    fImgs  = $$('.fg-img', fTrack),
+    fLists = $$('.fg-list > div', fTrack),
+    fCaps  = $$('.fg-cap span', fTrack),
+    fBars  = $$('.fg-bars .bar i', fTrack),
+    fCur   = -1, fN = 3, fAuto = 0;
+var fFx = new Fx(fMedia, fMedia.dataset.fx.split(','));
+
+function featSet(i, frac){
+  if(i !== fCur){
+    fCur = i;
+    fFx.set(i);
+    [fImgs,fLists,fCaps].forEach(function(g){
+      g.forEach(function(el,j){ el.classList.toggle('on', j===i) });
+    });
+  }
+  fBars.forEach(function(b,j){
+    b.style.transform = 'scaleX('+(j<i?1:j>i?0:clamp(frac,0,1))+')';
+  });
+}
+featSet(0,0);
+
+/* ═══════════ ROOMS ═══════════ */
+/* страницы пакетов собираются без разделов залов, «Комбо» и галереи — каждый блок ниже проверяет, есть ли он на странице */
+var stack = $('#roomsStack');
+if(stack) ROOMS.forEach(function(r, idx){
+  var slot = document.createElement('div');
+  slot.className = 'room-slot';
+  slot.innerHTML =
+   '<article class="room" data-room="'+idx+'">'+
+     '<div class="room-dim"></div>'+
+     '<div class="room-photo" data-fx="'+r.slides.join(',')+'">'+
+       r.slides.map(function(s,j){return '<div class="rp'+(j?'':' on')+'" style="background-image:'+img(s)+'"></div>'}).join('')+
+       '<div class="room-bars">'+r.slides.map(function(){return '<div class="bar"><i></i></div>'}).join('')+'</div>'+
+     '</div>'+
+     '<div class="room-side">'+
+       '<div>'+
+         '<div class="room-hd"><h3 class="d h3">'+r.name+'</h3><span class="room-no">'+r.no+'</span></div>'+
+         '<div class="tags"><span class="tag">'+r.area+' м<sup>2</sup></span><span class="tag">'+r.guests+'</span></div>'+
+       '</div>'+
+       '<div class="room-foot">'+
+         '<div class="prices">'+
+           '<div class="pb"><div class="pb-t"><b>Цена за гостя</b><span class="badge">Акция с пн-чт</span></div>'+
+             '<div class="pv d"><span class="a">'+r.guest+'</span><span class="b">₽/час</span></div></div>'+
+           '<div class="pb"><div class="pb-t"><b>Аренда зала</b></div>'+
+             '<div class="pv d"><span class="a">'+r.rent+'</span><span class="b">₽/час</span></div></div>'+
+         '</div>'+
+         '<button class="btn lg lg-w15" data-room-open="'+idx+'">Подробнее</button>'+
+       '</div>'+
+     '</div>'+
+   '</article>';
+  stack.appendChild(slot);
+});
+var slots = stack ? $$('.room-slot', stack) : [], cards = stack ? $$('.room', stack) : [], dims = stack ? $$('.room-dim', stack) : [];
+
+function Slider(root, dur){
+  this.bars = $$('.bar', root); this.slides = $$('.rp', root);
+  this.n = this.slides.length; this.i = 0; this.t = 0; this.dur = dur; this.vis = false; this.hov = false;
+  this.fx = new Fx(root, root.dataset.fx.split(','));
+  var self = this;
+  this.bars.forEach(function(b,j){ b.addEventListener('click', function(){ self.go(j) }) });
+  root.addEventListener('pointerenter', function(){ self.hov = true });
+  root.addEventListener('pointerleave', function(){ self.hov = false });
+  new IntersectionObserver(function(es){ self.vis = es[0].isIntersecting },{threshold:.15}).observe(root);
+  this.paint();
+}
+Slider.prototype.paint = function(){
+  var self = this;
+  this.slides.forEach(function(s,j){ s.classList.toggle('on', j===self.i) });
+  this.bars.forEach(function(b,j){
+    b.firstElementChild.style.transform = 'scaleX('+(j<self.i?1:j>self.i?0:self.t/self.dur)+')';
+  });
+};
+Slider.prototype.go = function(j){ this.i = (j+this.n)%this.n; this.t = 0; this.fx.set(this.i); this.paint(); };
+Slider.prototype.tick = function(dt){
+  this.fx.tick(dt);
+  if(!this.vis || this.hov || RM) return;
+  this.t += dt;
+  if(this.t >= this.dur){ this.t = 0; this.i = (this.i+1)%this.n; this.fx.set(this.i); }
+  this.paint();
+};
+var sliders = stack ? $$('.room-photo', stack).map(function(el){ return new Slider(el, 5200) }) : [];
+
+/* ═══════════ COMBOS (Card/Promo) ═══════════ */
+if($('#combosGrid')) $('#combosGrid').innerHTML = COMBOS.map(function(c,j){
+  return '<a class="combo up" href="paket-'+c.u+'.html" style="--d:'+(j%3*80)+'ms">'+
+    '<div class="combo-img" style="background-image:'+img(c.i)+'"></div>'+
+    '<div class="combo-veil"></div>'+
+    '<div class="combo-b"><div class="combo-t d">'+c.t+'</div></div>'+
+    '<span class="combo-link">Подробнее <svg viewBox="0 0 24 24"><use href="#i-arr24"/></svg></span></a>';
+}).join('');
+if(!RM) $$('.combo').forEach(function(el){
+  var rx=0, ry=0, tx=0, ty=0, on=false;
+  el.addEventListener('pointerenter', function(){ on = true });
+  el.addEventListener('pointermove', function(e){
+    var r = el.getBoundingClientRect();
+    tx = (e.clientX-r.left)/r.width-.5; ty = (e.clientY-r.top)/r.height-.5;
+  });
+  el.addEventListener('pointerleave', function(){ on = false; tx = ty = 0 });
+  el.__tilt = function(){
+    rx += ((on?ty:0)-rx)*.12; ry += ((on?tx:0)-ry)*.12;
+    if(Math.abs(rx)<1e-4 && Math.abs(ry)<1e-4 && !on){ el.style.transform=''; return }
+    el.style.transform = 'rotateX('+(-rx*11)+'deg) rotateY('+(ry*13)+'deg) translateZ('+(on?26:0)+'px) scale('+(on?1.015:1)+')';
+  };
+});
+var tilts = $$('.combo').map(function(e){return e.__tilt}).filter(Boolean);
+
+/* ═══════════ MARQUEES (gallery + review photos) ═══════════ */
+function Marquee(el, dir, speed){
+  this.el = el; this.dir = dir; this.speed = speed; this.x = 0; this.w = 0; this.mult = 1; this.target = 1;
+}
+Marquee.prototype.measure = function(){ this.w = this.el.scrollWidth/2 };
+Marquee.prototype.tick = function(dt){
+  if(!this.w) this.measure();
+  if(RM || !this.w) return;
+  this.mult += (this.target-this.mult)*.07;
+  this.x -= this.dir*this.speed*this.mult*dt/1000;
+  if(this.x <= -this.w) this.x += this.w;
+  if(this.x >= 0) this.x -= this.w;
+  this.el.style.transform = 'translate3d('+this.x+'px,0,0)';
+};
+
+var mqEl = $('#mq'), mqs = [];
+if(mqEl){
+  mqEl.innerHTML = GAL_ROWS.map(function(row,ri){
+    var cells = row.concat(row).map(function(g){
+      return '<div class="ph" data-gal="'+GAL_ALL.indexOf(g)+'" style="background-image:'+img(g)+'"></div>';
+    }).join('');
+    return '<div class="mq-row" data-dir="'+(ri===1?-1:1)+'">'+cells+'</div>';
+  }).join('');
+  mqs = $$('.mq-row').map(function(el,i){ return new Marquee(el, +el.dataset.dir, [26,21,24][i]) });
+  /* hover slows the whole carousel to 8 % — it never fully stops */
+  mqEl.addEventListener('pointerenter', function(){ mqs.forEach(function(m){ m.target = .08 }) });
+  mqEl.addEventListener('pointerleave', function(){ mqs.forEach(function(m){ m.target = 1 }) });
+}
+
+/* ═══════════ REVIEWS ═══════════ */
+var rPh = $('#revPhotos'), rCd = $('#revCards'), rDots = $('#revDots'),
+    N = REVIEWS.length, SET = 3, rIdx = N, rLock = false, rHover = false, rAuto = 0;
+function starRow(){ var s=''; for(var i=0;i<5;i++) s+='<svg viewBox="0 0 26.7 26.6" style="color:var(--yellow)"><use href="#i-star"/></svg>'; return '<div class="stars">'+s+'</div>'; }
+var rp = '', rc = '';
+for(var s0=0;s0<SET;s0++) REVIEWS.forEach(function(r){
+  rp += '<div class="rev-photo" style="background-image:'+img(r.p)+'"></div>';
+  rc += '<div class="rev-card lg lg-panel">'+
+        '<div class="rev-u"><div class="rev-av" style="background-image:'+img(r.av)+'"></div>'+
+        '<div><b>'+r.n+'</b><small>'+r.r+'</small></div></div>'+starRow()+
+        '<p class="rev-txt">'+r.t+'</p></div>';
+});
+rPh.innerHTML = rp; rCd.innerHTML = rc;
+rDots.innerHTML = REVIEWS.map(function(_,j){return '<span class="dot'+(j?'':' on')+'" data-dot="'+j+'"></span>'}).join('');
+var rDotEls = $$('.dot', rDots);
+var revPhotoMq = new Marquee(rPh, 1, 22);   /* photos drift for ever, like the gallery */
+
+function revLayout(anim){
+  var c = rCd.firstElementChild; if(!c) return;
+  var cw = c.offsetWidth + 24;
+  rCd.style.transition = anim ? '' : 'none';
+  rCd.style.transform = 'translate3d('+(-rIdx*cw)+'px,0,0)';
+  rDotEls.forEach(function(d,j){ d.classList.toggle('on', j === ((rIdx%N)+N)%N) });
+}
+function revGo(d){
+  if(rLock) return; rLock = true;
+  rIdx += d; revLayout(true);
+  setTimeout(function(){
+    if(rIdx >= N*2 || rIdx < N){ rIdx = ((rIdx%N)+N)%N + N; revLayout(false); }
+    rLock = false;
+  }, 1080);
+}
+$('#revNext').addEventListener('click', function(){ revGo(1); rAuto = 0; });
+$('#revPrev').addEventListener('click', function(){ revGo(-1); rAuto = 0; });
+rDotEls.forEach(function(d,j){ d.addEventListener('click', function(){
+  var cur = ((rIdx%N)+N)%N, diff = j-cur;
+  if(diff) revGo(diff); rAuto = 0;
+});});
+(function(){
+  var view = $('#revView'), sx = 0, drag = false;
+  view.addEventListener('pointerdown', function(e){ drag = true; sx = e.clientX; });
+  view.addEventListener('pointerup', function(e){
+    if(!drag) return; drag = false;
+    var dx = e.clientX - sx;
+    if(Math.abs(dx) > 60){ revGo(dx < 0 ? 1 : -1); rAuto = 0; }
+  });
+  view.addEventListener('pointercancel', function(){ drag = false });
+  view.addEventListener('pointerenter', function(){ rHover = true; revPhotoMq.target = .18 });
+  view.addEventListener('pointerleave', function(){ rHover = false; revPhotoMq.target = 1 });
+})();
+addEventListener('resize', function(){ revLayout(false); mqs.forEach(function(m){m.measure()}); revPhotoMq.measure(); });
+revLayout(false);
+
+/* ═══════════ SEO ACCORDION ═══════════ */
+(function(){
+  var body = $('#seoBody'), inner = $('#seoInner'), tg = $('#seoTg'), wrap = $('#seoWrap'),
+      lbl = $('span', tg), open = false;
+  tg.addEventListener('click', function(){
+    open = !open;
+    wrap.classList.toggle('seo-open', open);
+    body.style.height = open ? inner.scrollHeight + 'px' : '171px';
+    lbl.textContent = open ? 'Свернуть' : 'Читать полностью';
+  });
+})();
+
+/* ═══════════ MODALS ═══════════ */
+var modRoom = $('#modRoom'), modGal = $('#modGal'), curGal = [], curGalI = 0, curRoom = 0;
+function openMod(m){
+  m.classList.add('open'); document.body.classList.add('locked');
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ m.classList.add('in') }) });
+}
+function closeMod(m){
+  m.classList.remove('in');
+  setTimeout(function(){
+    m.classList.remove('open');
+    if(!$('.mod.open')) document.body.classList.remove('locked');
+  }, 420);
+}
+$$('[data-close]').forEach(function(el){ el.addEventListener('click', function(){ closeMod(el.closest('.mod')) }) });
+
+function openRoom(i){
+  curRoom = i; var r = ROOMS[i];
+  $('#rdTitle').textContent = r.name;
+  /* «м²» символом U+00B2: в Figma «2» с функцией SUPS, в веб-версии Onest её нет, а глиф ² есть */
+  $('#rdTags').innerHTML = '<span class="tag">'+r.area+'&nbsp;м²</span><span class="tag">'+r.guests+'</span>'+
+                           '<span class="tag">Экран '+r.screen+' м</span>';
+  /* цены как в Figma: сумма 40 жёлтым, «₽» 40 жёлтым, «/ Час» 18 серым */
+  function row(t, v){
+    return '<div class="rd-row"><div class="t">'+t+'</div><div class="v"><b class="d">'+v+'</b>'+
+           '<span class="sfx"><span class="d">₽</span><span class="per">/&nbsp;Час</span></span></div></div>';
+  }
+  $('#rdRent').innerHTML  = row('Пн–чт', r.rentA) + row('Пт–вс', r.rentB);
+  $('#rdGuest').innerHTML = row('Пн–чт (до 23.00)', r.guestA);
+  $('#rdThumbs').innerHTML = r.slides.map(function(s,j){
+    return '<div class="t'+(j?'':' on')+'" data-rd="'+j+'" style="background-image:'+img(s)+'"></div>';
+  }).join('');
+  setRdBg(0);
+  openMod(modRoom);
+}
+function setRdBg(j){
+  var r = ROOMS[curRoom];
+  $('#rdBg').style.backgroundImage = img(r.slides[j]);
+  $$('#rdThumbs .t').forEach(function(t,k){ t.classList.toggle('on', k===j) });
+  $('#rdBg').dataset.j = j;
+}
+$('#rdThumbs').addEventListener('click', function(e){
+  var t = e.target.closest('[data-rd]'); if(t) setRdBg(+t.dataset.rd);
+});
+$('#rdExp').addEventListener('click', function(){
+  openGal(ROOMS[curRoom].slides, +($('#rdBg').dataset.j||0));
+});
+if(stack) stack.addEventListener('click', function(e){
+  var b = e.target.closest('[data-room-open]'); if(b){ openRoom(+b.dataset.roomOpen); return; }
+  var z = e.target.closest('[data-zoom]');
+  if(z){ var i = +z.dataset.zoom; openGal(ROOMS[i].slides, sliders[i].i); }
+});
+
+function openGal(list, i){
+  curGal = list; curGalI = i;
+  $('#gfThumbs').innerHTML = list.map(function(s,j){
+    return '<div class="t" data-gf="'+j+'" style="background-image:'+img(s)+'"></div>';
+  }).join('');
+  paintGal();
+  openMod(modGal);
+}
+function paintGal(){
+  $('#gfBg').style.backgroundImage = img(curGal[curGalI]);
+  $$('#gfThumbs .t').forEach(function(t,k){ t.classList.toggle('on', k===curGalI) });
+}
+function galStep(d){ curGalI = (curGalI+d+curGal.length)%curGal.length; paintGal(); }
+$('#gfPrev').addEventListener('click', function(){ galStep(-1) });
+$('#gfNext').addEventListener('click', function(){ galStep(1) });
+$('#gfThumbs').addEventListener('click', function(e){
+  var t = e.target.closest('[data-gf]'); if(t){ curGalI = +t.dataset.gf; paintGal(); }
+});
+if(mqEl) mqEl.addEventListener('click', function(e){
+  var p = e.target.closest('[data-gal]'); if(p) openGal(GAL_ALL, +p.dataset.gal);
+});
+addEventListener('keydown', function(e){
+  var open = $('.mod.open'); if(!open) return;
+  if(e.key === 'Escape') closeMod(open);
+  if(open === modGal){ if(e.key==='ArrowRight') galStep(1); if(e.key==='ArrowLeft') galStep(-1); }
+});
+
+/* ═══════════ MAP — real OSM tiles for Колокольников пер., 22 с5 ═══════════ */
+var MapUI = (function(){
+  var LV = [ {img:'mapz15', w:2048, h:1280, fx:0.512821, fy:0.480431},
+             {img:'mapz17', w:2048, h:1280, fx:0.551285, fy:0.521726} ];
+  var view = $('#mapview'), layer = $('#maplayer'), pin = $('#mapPin');
+  var lv = 0, ox = 0, oy = 0, vw = 0, vh = 0, drag = false, px = 0, py = 0;
+
+  function L(){ return LV[lv] }
+  function clampOff(){
+    ox = clamp(ox, vw - L().w, 0);
+    oy = clamp(oy, vh - L().h, 0);
+  }
+  function paint(){
+    layer.style.width = L().w+'px'; layer.style.height = L().h+'px';
+    layer.style.backgroundImage = img(L().img);
+    layer.style.transform = 'translate3d('+ox+'px,'+oy+'px,0)';
+    pin.style.left = (ox + L().fx*L().w)+'px';
+    pin.style.top  = (oy + L().fy*L().h)+'px';
+  }
+  function centre(){
+    var r = view.getBoundingClientRect(); vw = r.width; vh = r.height;
+    if(!vw) return;
+    ox = vw*0.579 - L().fx*L().w;     /* pin lands where Figma puts it */
+    oy = vh*0.339 - L().fy*L().h;
+    clampOff(); paint();
+  }
+  view.addEventListener('pointerdown', function(e){
+    drag = true; px = e.clientX; py = e.clientY;
+    view.classList.add('drag'); view.setPointerCapture(e.pointerId);
+  });
+  view.addEventListener('pointermove', function(e){
+    if(!drag) return;
+    ox += e.clientX - px; oy += e.clientY - py; px = e.clientX; py = e.clientY;
+    clampOff(); paint();
+  });
+  function stop(){ drag = false; view.classList.remove('drag') }
+  view.addEventListener('pointerup', stop);
+  view.addEventListener('pointercancel', stop);
+  function zoom(d){
+    var n = clamp(lv+d, 0, LV.length-1); if(n===lv) return;
+    /* keep the club pinned where it currently sits */
+    var cx = ox + L().fx*L().w, cy = oy + L().fy*L().h;
+    lv = n;
+    ox = cx - L().fx*L().w; oy = cy - L().fy*L().h;
+    clampOff(); paint();
+  }
+  $('#mapIn').addEventListener('click', function(){ zoom(1) });
+  $('#mapOut').addEventListener('click', function(){ zoom(-1) });
+  addEventListener('resize', centre);
+  centre(); setTimeout(centre, 120);
+  return {centre:centre};
+})();
+
+/* ═══════════ MAIN LOOP ═══════════ */
+var prog = $('#prog'), last = performance.now(), isMobile = innerWidth <= 860;
+var pars = $$('.par');
+addEventListener('resize', function(){ isMobile = innerWidth <= 860; });
+
+function frame(now){
+  var dt = Math.min(now - last, 60); last = now;
+  var y = scrollY || pageYOffset, vh = innerHeight;
+
+  var max = document.documentElement.scrollHeight - vh;
+  prog.style.transform = 'scaleX('+(max>0 ? clamp(y/max,0,1) : 0)+')';
+
+  hdr.classList.toggle('scrolled', y > 40);
+  if(y > 520 && y > lastY + 4) hdr.classList.add('hide');
+  else if(y < lastY - 4 || y < 300) hdr.classList.remove('hide');
+  lastY = y;
+
+  /* hero: only the photo layer moves — never an ancestor of frosted glass */
+  if(kbs && y < vh*1.2){
+    var hp = clamp(y/vh,0,1);
+    kbs.style.transform = 'translate3d(0,'+(hp*90)+'px,0)';
+    heroH1.style.opacity = String(clamp(1-hp*1.45,0,1));
+    heroH1.style.transform = 'translate3d(0,'+(hp*54)+'px,0)';
+    if(metrics){ metrics.style.opacity = heroH1.style.opacity; metrics.style.transform = heroH1.style.transform; }
+  }
+
+  if(!isMobile){
+    var ftr = fTrack.getBoundingClientRect(), span = ftr.height - vh;
+    if(span > 0){
+      var p = clamp((-ftr.top)/span, 0, .9999) * fN;
+      featSet(Math.floor(p), p - Math.floor(p));
+    }
+  } else if(!RM){
+    fAuto += dt; var D = 5200;
+    if(fAuto >= D*fN) fAuto = 0;
+    featSet(Math.floor(fAuto/D), (fAuto % D)/D);
+  }
+  fFx.tick(dt);
+
+  for(var i=0;i<slots.length;i++){
+    var cov = 0;
+    if(!isMobile && i < slots.length-1){
+      var a = slots[i].getBoundingClientRect(), b = slots[i+1].getBoundingClientRect();
+      cov = clamp((a.bottom - b.top) / a.height, 0, 1);
+    }
+    var e = cov*cov*(3-2*cov);
+    cards[i].style.transform = 'scale('+(1-.10*e)+') translate3d(0,'+(e*10)+'px,0)';
+    dims[i].style.opacity = String(e*.55);
+  }
+
+  for(var k=0;k<pars.length;k++){
+    var pr = pars[k], rb = pr.getBoundingClientRect();
+    if(rb.bottom > 0 && rb.top < vh){
+      var t = (rb.top + rb.height/2 - vh/2) / vh;
+      pr.style.transform = 'translate3d(0,'+(t * -parseFloat(pr.dataset.par)) + 'px,0)';
+    }
+  }
+
+  for(var s=0;s<sliders.length;s++) sliders[s].tick(dt);
+  for(var m=0;m<mqs.length;m++) mqs[m].tick(dt);
+  revPhotoMq.tick(dt);
+  for(var q=0;q<tilts.length;q++) tilts[q]();
+
+  if(!rHover && !RM && !$('.mod.open')){
+    rAuto += dt;
+    if(rAuto > 6500){ rAuto = 0; revGo(1); }
+  }
+  requestAnimationFrame(frame);
+}
+addEventListener('resize', function(){
+  fFx.resize(); sliders.forEach(function(s){ s.fx.resize() });
+});
+setTimeout(function(){ fFx.resize(); sliders.forEach(function(s){ s.fx.resize() }); }, 60);
+watch(document);
+requestAnimationFrame(frame);
+})();
+</script>
+
+</body>
+</html>
