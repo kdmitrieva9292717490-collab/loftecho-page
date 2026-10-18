@@ -71,7 +71,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* UI Kit → Button/Social (подвал): Hover — розовая обводка и иконка + свечение */
 .ring{border:1px solid var(--white);border-radius:100px;color:var(--white);
   transition:background-color .3s,border-color .3s,color .3s,box-shadow .3s}
-.ring:hover{border-color:var(--pink);color:var(--pink);box-shadow:var(--glow)}
+/* её решение: кнопки-иконки в подвале ведут себя как в шапке — розовые обводка и иконка, без свечения */
+.ring:hover{border-color:var(--pink);color:var(--pink)}
 /* UI Kit → Button/Telegram, Button/WhatsApp (шапка): Hover — розовая обводка и иконка, без заливки и свечения */
 .ic.ring:hover{box-shadow:none}
 /* UI Kit → Button/Slider Arrow: Default — обводка и иконка 30%, при наведении — состояние Active (100%) */

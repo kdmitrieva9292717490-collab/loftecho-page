@@ -71,7 +71,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* UI Kit → Button/Social (подвал): Hover — розовая обводка и иконка + свечение */
 .ring{border:1px solid var(--white);border-radius:100px;color:var(--white);
   transition:background-color .3s,border-color .3s,color .3s,box-shadow .3s}
-.ring:hover{border-color:var(--pink);color:var(--pink);box-shadow:var(--glow)}
+/* её решение: кнопки-иконки в подвале ведут себя как в шапке — розовые обводка и иконка, без свечения */
+.ring:hover{border-color:var(--pink);color:var(--pink)}
 /* UI Kit → Button/Telegram, Button/WhatsApp (шапка): Hover — розовая обводка и иконка, без заливки и свечения */
 .ic.ring:hover{box-shadow:none}
 /* UI Kit → Button/Slider Arrow: Default — обводка и иконка 30%, при наведении — состояние Active (100%) */
@@ -1114,8 +1115,9 @@ footer{position:relative;display:flex;flex-direction:column;align-items:center;
   <div class="fbar">
     <div class="fgroup">
       <div class="fsoc up">
-        <a class="ring" href="#" aria-label="Instagram"><svg width="24" height="24" viewBox="0 0 20 20" style="color:var(--white)"><use href="#i-ig"/></svg></a>
-        <a class="ring" href="#" aria-label="VK"><svg width="24" height="17" viewBox="0 0 20 14" style="color:var(--white)"><use href="#i-vk"/></svg></a>
+        <!-- Figma Button/Social: рамка иконки 24, знак Instagram 20×20 (2,2), VK 20×14 (2,5); цвет — от кнопки (для наведения) -->
+        <a class="ring" href="#" aria-label="Instagram"><svg width="24" height="24" viewBox="0 0 24 24"><use href="#i-ig" x="2" y="2" width="20" height="20"/></svg></a>
+        <a class="ring" href="#" aria-label="VK"><svg width="24" height="24" viewBox="0 0 24 24"><use href="#i-vk" x="2" y="5" width="20" height="14"/></svg></a>
       </div>
       <p class="fnote up" style="--d:80ms">*Социальная сеть Инстаграм запрещена на территории РФ</p>
     </div>
