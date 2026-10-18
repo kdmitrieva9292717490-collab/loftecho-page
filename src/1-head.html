@@ -190,20 +190,23 @@ section{position:relative;scroll-margin-top:112px}
 .hero{height:100svh;min-height:660px;max-height:1100px;position:relative;overflow:hidden;display:flex;
   flex-direction:column;justify-content:flex-end;align-items:center;padding-bottom:clamp(28px,4vh,48px)}
 .kbs{position:absolute;inset:0;z-index:0;will-change:transform}
+/* Повтор After Effects-ролика «Hero_Slideshow.mp4» (замерено по кадрам):
+   новый зал каждые 9 с, наплыв 3 с, зал на экране 12 с (3 появление + 6 + 3 уход),
+   камера равномерно отъезжает от центра 115% → 100%. Цикл 5 × 9 = 45 с.
+   12 с = 26.667% цикла, 3 с = 6.667%. Лава стартует с −3 с — при загрузке уже видна целиком. */
 .kb{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;will-change:transform,opacity;
-  animation:kb 45s infinite linear}
-.kb:nth-child(1){background-image:var(--i-lava);animation-delay:-1.4s}
-.kb:nth-child(2){background-image:var(--i-kosmos);animation-delay:7.6s}
-.kb:nth-child(3){background-image:var(--i-tropiki);animation-delay:16.6s}
-.kb:nth-child(4){background-image:var(--i-laguna);animation-delay:25.6s}
-.kb:nth-child(5){background-image:var(--i-euphoria);animation-delay:34.6s}
-.kb:nth-child(even){--tx:-2.2%}
+  transform:scale(1.15);animation:kb 45s infinite linear}
+.kb:nth-child(1){background-image:var(--i-hero-lava);animation-delay:-3s}
+.kb:nth-child(2){background-image:var(--i-kosmos);animation-delay:6s}
+.kb:nth-child(3){background-image:var(--i-hero-tropiki);animation-delay:15s}
+.kb:nth-child(4){background-image:var(--i-laguna);animation-delay:24s}
+.kb:nth-child(5){background-image:var(--i-euphoria);animation-delay:33s}
 @keyframes kb{
-  0%  {opacity:0;transform:scale(1.10) translate3d(0,0,0)}
-  3%  {opacity:1}
-  17% {opacity:1}
-  20% {opacity:0;transform:scale(1.21) translate3d(var(--tx,2.2%),-1.3%,0)}
-  100%{opacity:0;transform:scale(1.21) translate3d(var(--tx,2.2%),-1.3%,0)}
+  0%      {opacity:0;transform:scale(1.15)}
+  6.667%  {opacity:1}
+  20%     {opacity:1}
+  26.667% {opacity:0;transform:scale(1)}
+  100%    {opacity:0;transform:scale(1)}
 }
 /* progressive blur: the photo dissolves into the page ground */
 .hero-blur{position:absolute;left:0;right:0;bottom:0;height:46%;z-index:1;pointer-events:none}
