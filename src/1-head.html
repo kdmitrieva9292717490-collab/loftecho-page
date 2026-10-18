@@ -66,8 +66,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .ring{border:1px solid var(--white);border-radius:100px;color:var(--white);
   transition:background-color .3s,border-color .3s,color .3s,box-shadow .3s}
 .ring:hover{border-color:var(--pink);color:var(--pink);box-shadow:var(--glow)}
-/* UI Kit → Button/Telegram, Button/WhatsApp (шапка): Hover — белая заливка, розовая обводка и иконка, без свечения */
-.ic.ring:hover{background:#fff;box-shadow:none}
+/* UI Kit → Button/Telegram, Button/WhatsApp (шапка): Hover — розовая обводка и иконка, без заливки и свечения */
+.ic.ring:hover{box-shadow:none}
 /* UI Kit → Button/Slider Arrow: Default — обводка и иконка 30%, при наведении — состояние Active (100%) */
 .ring-30{border:1px solid var(--w30);border-radius:100px;color:var(--w30);transition:border-color .3s,color .3s}
 .ring-30:hover{border-color:var(--white);color:var(--white)}
@@ -206,7 +206,7 @@ section{position:relative;scroll-margin-top:112px}
 
 .metrics{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(20px,3.5vw,56px);will-change:transform}
 .metric{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
-.metric .v{color:var(--yellow);display:flex;align-items:center;gap:8px;   /* UI Kit: цифры и иконки жёлтые, подписи белые */font-size:clamp(26px,2.5vw,40px);line-height:normal;white-space:nowrap}
+.metric .v{color:var(--white);display:flex;align-items:center;gap:8px;font-size:clamp(26px,2.5vw,40px);line-height:normal;white-space:nowrap}
 .metric small{font-size:clamp(13px,1vw,16px);color:var(--white)}
 .metric svg{flex:none;width:32px;height:32px}
 .metric:nth-child(1) svg{width:68px;height:32px}
