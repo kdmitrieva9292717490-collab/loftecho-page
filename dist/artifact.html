@@ -1081,15 +1081,16 @@ function src(name){
 }
 
 /* ═══════════ HEADER DROPDOWN ═══════════
-   наведение открывает, уход курсора закрывает; щелчок по кнопке переключает;
+   наведение открывает, уход курсора закрывает (если меню не закреплено);
+   1-й щелчок — открыть и закрепить, 2-й щелчок — закрыть;
    щелчок мимо, Esc, выбор пункта — закрывают */
 $$('.dd').forEach(function(dd){
-  var btn = $('.nl', dd), t = 0;
-  function set(on){ clearTimeout(t); dd.classList.toggle('open', on); btn.setAttribute('aria-expanded', on) }
+  var btn = $('.nl', dd), t = 0, pinned = false;
+  function set(on){ clearTimeout(t); if(!on) pinned = false; dd.classList.toggle('open', on); btn.setAttribute('aria-expanded', on) }
   btn.setAttribute('aria-haspopup', 'true'); btn.setAttribute('aria-expanded', 'false');
-  btn.addEventListener('click', function(e){ e.preventDefault(); set(!dd.classList.contains('open')) });
+  btn.addEventListener('click', function(e){ e.preventDefault(); if(pinned) set(false); else { set(true); pinned = true } });
   dd.addEventListener('pointerenter', function(e){ if(e.pointerType === 'mouse') set(true) });
-  dd.addEventListener('pointerleave', function(e){ if(e.pointerType === 'mouse'){ clearTimeout(t); t = setTimeout(function(){ set(false) }, 180) } });
+  dd.addEventListener('pointerleave', function(e){ if(e.pointerType === 'mouse' && !pinned){ clearTimeout(t); t = setTimeout(function(){ set(false) }, 180) } });
   $$('.ddm a', dd).forEach(function(a){ a.addEventListener('click', function(){ set(false) }) });
   document.addEventListener('click', function(e){ if(!dd.contains(e.target)) set(false) });
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && dd.classList.contains('open')){ set(false); btn.focus() } });
