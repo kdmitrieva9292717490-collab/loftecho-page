@@ -417,7 +417,9 @@ section{position:relative;scroll-margin-top:112px}
 .seo-tg,.combo-link{transition:color .3s,text-shadow .3s,opacity .4s var(--ease),transform .4s var(--ease)}
 .seo-tg:hover,.combo-link:hover{color:var(--pink);text-shadow:var(--glow)}
 .seo-tg:hover svg,.combo-link:hover svg{filter:drop-shadow(var(--glow))}
-.seo-open .seo-tg svg{transform:rotate(180deg)}
+/* UI Kit → UI/Accordion Toggle: «Читать полностью» — стрелка вниз, «Свернуть» — вверх */
+.seo-tg svg{transform:rotate(180deg)}
+.seo-open .seo-tg svg{transform:none}
 
 /* ══════════════ MAP + FOOTER ══════════════ */
 .mapwrap{position:relative;min-height:606px;overflow:hidden;background:#5b4820;
@@ -981,7 +983,7 @@ footer{position:relative;display:flex;flex-direction:column;align-items:center;
         </div>
         <div class="seo-fade"></div>
       </div>
-      <button class="seo-tg" id="seoTg"><span>Читать полностью</span> <svg viewBox="0 0 16 16" style="transform:rotate(180deg)"><use href="#i-chev"/></svg></button>
+      <button class="seo-tg" id="seoTg"><span>Читать полностью</span> <svg viewBox="0 0 16 16"><use href="#i-chev"/></svg></button>
     </div>
   </div>
 </section>
