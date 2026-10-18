@@ -62,6 +62,12 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   -webkit-backdrop-filter:blur(15px);backdrop-filter:blur(15px);
   transition:background-color .4s var(--ease),border-color .4s var(--ease)}
 .lg-hdr{-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+/* у плашки шапки размытие — на подложке ::before: иначе плашка становится «корнем» размытия
+   и выпадающее меню внутри неё не может размыть фон страницы */
+.pill.lg-hdr{-webkit-backdrop-filter:none;backdrop-filter:none;isolation:isolate}
+.pill.lg-hdr::before{content:'';position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.scrolled .ddm{background:rgba(5,5,5,.46)}   /* как плашка шапки после прокрутки */
 .scrolled .lg-hdr{background:rgba(5,5,5,.46)}
 /* UI Kit → Button: Secondary. Default — белый 15% + обводка 30% + blur 30; Hover — как Primary Hover */
 .lg-btn,.lg-w15{background:rgba(253,253,253,.15);border-color:var(--w30);-webkit-backdrop-filter:blur(15px);backdrop-filter:blur(15px)} /* Figma blur 30 = CSS 15 */
@@ -147,8 +153,11 @@ section{position:relative;scroll-margin-top:112px}
 .nl svg{flex:none;width:16px;height:16px;transition:transform .4s var(--ease)}
 .dd{position:relative;display:flex;align-items:center}
 .dd:hover .nl svg{transform:rotate(180deg)}
-.ddm{position:absolute;top:calc(100% + 18px);left:-16px;width:253px;border-radius:10px;
-  padding:4px 0;overflow:hidden;opacity:0;visibility:hidden;transform:translateY(-8px) scale(.98);
+/* Figma Dropdown Menu: 253 шириной, поля 16 сверху/снизу, скруглены только нижние углы 16,
+   стекло как у шапки (чёрный 10%, обводка 15%, blur 20 → CSS 10) */
+.ddm{position:absolute;top:calc(100% + 18px);left:-12px;width:253px;border-radius:0 0 16px 16px;
+  padding:16px 0;background:rgba(5,5,5,.10);border:1px solid var(--w15);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);overflow:hidden;opacity:0;visibility:hidden;transform:translateY(-8px) scale(.98);
   transform-origin:50% 0;transition:opacity .35s var(--ease),transform .45s var(--ease),visibility .35s}
 .dd:hover .ddm,.dd:focus-within .ddm{opacity:1;visibility:visible;transform:none}
 .ddm a{display:flex;align-items:center;padding:8px 16px;font-size:18px;white-space:nowrap;position:relative;
@@ -169,6 +178,7 @@ section{position:relative;scroll-margin-top:112px}
   .pill.r{gap:24px}
   .pill.r .soc{margin-right:-8px}   /* 24 − 8 = 16 до кнопки; когда .soc скрыт (≤1300), правило не действует */
   .dd .nl{padding:0}
+  .ddm{top:calc(100% + 28px)}   /* вплотную к низу плашки: (80 − 24) / 2 = 28 */
   .ci .nl{height:auto}
 }
 /* 1081–1280: две плашки шапки целиком не помещаются (578+16+605) — прячем только телефон с адресом */
@@ -660,7 +670,7 @@ footer{position:relative;display:flex;flex-direction:column;align-items:center;
         <a class="nl" href="#rooms"><span>Залы</span></a>
         <div class="dd">
           <button class="nl"><span>Пакетные предложения</span><svg viewBox="0 0 16 16" style="transform:rotate(180deg)"><use href="#i-chev"/></svg></button>
-          <div class="ddm lg-solid">
+          <div class="ddm">
             <a style="--i:0" href="#combos">День рождения</a>
             <a style="--i:1" href="#combos">Девичник</a>
             <a style="--i:2" href="#combos">Корпоратив</a>
