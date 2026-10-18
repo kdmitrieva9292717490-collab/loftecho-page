@@ -20,6 +20,7 @@
   --max:1840px;
   --ease:cubic-bezier(.16,1,.3,1);
   --ease2:cubic-bezier(.65,0,.35,1);
+  --glow:0 0 20px #FF3BCF;   /* UI Kit: Drop shadow 0 0, blur 20, #FF3BCF — у всех Hover */
 }
 
 *,*::before,*::after{box-sizing:border-box}
@@ -55,19 +56,21 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   transition:background-color .4s var(--ease),border-color .4s var(--ease)}
 .lg-hdr{-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .scrolled .lg-hdr{background:rgba(5,5,5,.46)}
-.lg-btn{background:rgba(255,255,255,.20)}
-.lg-btn:hover{background:rgba(255,255,255,.30)}
-.lg-w15{background:rgba(253,253,253,.15);border-color:var(--w30)}
-.lg-w15:hover{background:rgba(253,253,253,.26)}
+/* UI Kit → Button: Secondary. Default — белый 15% + обводка 30% + blur 30; Hover — как Primary Hover */
+.lg-btn,.lg-w15{background:rgba(253,253,253,.15);border-color:var(--w30);-webkit-backdrop-filter:blur(30px);backdrop-filter:blur(30px)}
+.lg-btn:hover,.lg-w15:hover{background:var(--pink);border-color:var(--w30);box-shadow:var(--glow)}
 .lg-panel{background:rgba(5,5,5,.58)}
 .lg-panel:hover{background:rgba(5,5,5,.68)}
 .lg-solid{background:#050505;border:1px solid var(--w15);-webkit-backdrop-filter:none;backdrop-filter:none}
-.ring{border:1px solid var(--white);border-radius:100px;transition:background-color .4s var(--ease),transform .4s var(--ease)}
-.ring:hover{background:var(--white)}
-.ring:hover svg path{fill:#050505;stroke:#050505}
-.ring-30{border:1px solid var(--w30);border-radius:100px;transition:background-color .4s var(--ease),transform .4s var(--ease)}
-.ring-30:hover{background:var(--white);border-color:var(--white)}
-.ring-30:hover svg path{stroke:#050505;fill:#050505}
+/* UI Kit → Button/Social (подвал): Hover — розовая обводка и иконка + свечение */
+.ring{border:1px solid var(--white);border-radius:100px;color:var(--white);
+  transition:background-color .3s,border-color .3s,color .3s,box-shadow .3s}
+.ring:hover{border-color:var(--pink);color:var(--pink);box-shadow:var(--glow)}
+/* UI Kit → Button/Telegram, Button/WhatsApp (шапка): Hover — белая заливка, розовая обводка и иконка, без свечения */
+.ic.ring:hover{background:#fff;box-shadow:none}
+/* UI Kit → Button/Slider Arrow: Default — обводка и иконка 30%, при наведении — состояние Active (100%) */
+.ring-30{border:1px solid var(--w30);border-radius:100px;color:var(--w30);transition:border-color .3s,color .3s}
+.ring-30:hover{border-color:var(--white);color:var(--white)}
 
 /* ══════════════ TYPE ══════════════ */
 /* Roboto Flex в Figma: wdth 50 + параметрические оси XOPQ 73, XTRA 440 (у шрифта по умолчанию 96 / 468) */
@@ -105,12 +108,10 @@ section{position:relative;scroll-margin-top:112px}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding-inline:32px;
   border-radius:10px;font-weight:500;font-size:16px;line-height:1;white-space:nowrap;position:relative;overflow:hidden;
-  transition:transform .45s var(--ease),box-shadow .45s var(--ease),background-color .3s}
-.btn-pink{background:var(--pink);color:var(--white);box-shadow:0 0 0 rgba(197,0,149,0)}
-.btn-pink::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,.30) 50%,transparent 65%);
-  transform:translateX(-130%);transition:transform .75s var(--ease)}
-.btn-pink:hover::after{transform:translateX(130%)}
-.btn-pink:hover{box-shadow:0 10px 34px -8px rgba(197,0,149,.85)}
+  transition:transform .45s var(--ease),box-shadow .3s,background-color .3s,border-color .3s}
+/* UI Kit → Button: Primary. Hover — та же заливка + обводка белым 30% + свечение */
+.btn-pink{background:var(--pink);color:var(--white);border:1px solid transparent}
+.btn-pink:hover{border-color:var(--w30);box-shadow:var(--glow)}
 .btn.lg{color:var(--white)}
 .btn:active{transform:scale(.97)}
 
@@ -132,7 +133,10 @@ section{position:relative;scroll-margin-top:112px}
 .nl>span{position:relative;display:inline-block;padding-bottom:3px}
 .nl>span::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--white);
   transform:scaleX(0);transform-origin:100% 50%;transition:transform .5s var(--ease)}
-.nl:hover>span::after{transform:scaleX(1);transform-origin:0 50%}
+/* UI Kit → UI/Nav link: Hover — текст белый 60%, без подчёркивания */
+.nl{transition:color .3s}
+.nl:hover{color:var(--w60)}
+.nl>span::after{display:none}
 .nl svg{flex:none;width:16px;height:16px;transition:transform .4s var(--ease)}
 .dd{position:relative;display:flex;align-items:center}
 .dd:hover .nl svg{transform:rotate(180deg)}
@@ -143,12 +147,11 @@ section{position:relative;scroll-margin-top:112px}
 .ddm a{display:flex;align-items:center;padding:8px 16px;font-size:18px;white-space:nowrap;position:relative;
   opacity:0;transform:translateX(-10px);transition:opacity .4s var(--ease),transform .4s var(--ease),background-color .25s}
 .dd:hover .ddm a,.dd:focus-within .ddm a{opacity:1;transform:none;transition-delay:calc(var(--i)*32ms + 60ms)}
-.ddm a:hover{background:rgba(255,255,255,.14)}
+.ddm a:hover{background:var(--w15)}   /* UI Kit → Menu Item: Hover */
 .hdr .ci{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
 .hdr .ci small{font-size:12px;opacity:.7;line-height:normal}
 .soc{display:flex;gap:8px}
 .ic{width:40px;height:40px;display:grid;place-items:center}
-.ic:hover{transform:translateY(-3px)}
 .ic svg{width:22px;height:22px}
 .burger{display:none;position:relative;width:40px;height:40px;border-radius:10px;pointer-events:auto}
 .burger span{position:absolute;left:11px;width:18px;height:1.5px;border-radius:2px;background:#fff;z-index:3;
@@ -203,7 +206,7 @@ section{position:relative;scroll-margin-top:112px}
 
 .metrics{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(20px,3.5vw,56px);will-change:transform}
 .metric{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
-.metric .v{display:flex;align-items:center;gap:8px;font-size:clamp(26px,2.5vw,40px);line-height:normal;white-space:nowrap}
+.metric .v{color:var(--yellow);display:flex;align-items:center;gap:8px;   /* UI Kit: цифры и иконки жёлтые, подписи белые */font-size:clamp(26px,2.5vw,40px);line-height:normal;white-space:nowrap}
 .metric small{font-size:clamp(13px,1vw,16px);color:var(--white)}
 .metric svg{flex:none;width:32px;height:32px}
 .metric:nth-child(1) svg{width:68px;height:32px}
@@ -249,7 +252,7 @@ section{position:relative;scroll-margin-top:112px}
 .room-bars .bar{cursor:pointer}
 .room-bars .bar::before{content:'';position:absolute;inset:-9px 0}
 .room-zoom{position:absolute;right:24px;top:24px;z-index:3;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;
-  opacity:0;transform:scale(.9);transition:opacity .4s var(--ease),transform .4s var(--ease)}
+  color:var(--white);opacity:0;transform:scale(.9);transition:opacity .4s var(--ease),transform .4s var(--ease),color .3s}
 .room:hover .room-zoom{opacity:1;transform:none}
 .room-side{flex:1 1 50%;min-width:0;background:var(--card);padding:48px;display:flex;flex-direction:column;justify-content:space-between;gap:24px}
 .room-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
@@ -289,7 +292,6 @@ section{position:relative;scroll-margin-top:112px}
 .combo:hover .combo-img{transform:scale(1.09)}
 .combo:hover .combo-veil{opacity:1}
 .combo:hover .combo-link{opacity:1;transform:none}
-.combo:hover .combo-link svg{transform:translateX(5px)}
 
 /* ══════════════ SPECIAL OFFERS (Frame 1589 1:1) ══════════════ */
 .offers{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
@@ -366,7 +368,6 @@ section{position:relative;scroll-margin-top:112px}
 .dot.on{background:var(--white);width:10px;height:10px}
 .arrows{display:flex;gap:24px;align-items:center}
 .arr{width:40px;height:40px;display:grid;place-items:center}
-.arr:hover{transform:scale(1.08)}
 .arr svg{width:18px;height:18px}
 
 /* ══════════════ SEO ══════════════ */
@@ -383,6 +384,10 @@ section{position:relative;scroll-margin-top:112px}
 .seo-open .seo-fade{opacity:0}
 .seo-tg{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-weight:500}
 .seo-tg svg{width:24px;height:24px;transition:transform .45s var(--ease)}
+/* UI Kit → Button: Tertiary. Hover — текст и иконка розовые + свечение */
+.seo-tg,.combo-link{transition:color .3s,text-shadow .3s,opacity .4s var(--ease),transform .4s var(--ease)}
+.seo-tg:hover,.combo-link:hover{color:var(--pink);text-shadow:var(--glow)}
+.seo-tg:hover svg,.combo-link:hover svg{filter:drop-shadow(var(--glow))}
 .seo-open .seo-tg svg{transform:rotate(180deg)}
 
 /* ══════════════ MAP + FOOTER ══════════════ */
@@ -448,8 +453,10 @@ footer{position:relative;display:flex;flex-direction:column;align-items:center;
   transition:opacity .55s var(--ease),transform .7s var(--ease);box-shadow:0 60px 140px -50px #000}
 .mod.in .mod-in{opacity:1;transform:none}
 .mod-x{position:absolute;right:20px;top:20px;z-index:10;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;
-  transition:transform .35s var(--ease)}
-.mod-x:hover{transform:rotate(90deg)}
+  color:var(--white);transition:color .3s}
+/* UI Kit → Button/Modal Action Close / Expand: Hover — иконка белая 30%, фон не меняется */
+.mod-x:hover,.rd-exp:hover,.room-zoom:hover{color:var(--w30)}
+.mod-x.lg-panel:hover,.rd-exp.lg-panel:hover,.room-zoom.lg-panel:hover{background:rgba(5,5,5,.58)}
 .mod-bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:opacity .5s}
 .rd-panel{position:absolute;left:clamp(12px,1.6vw,24px);top:clamp(12px,1.6vw,24px);bottom:clamp(12px,1.6vw,24px);z-index:5;
   width:min(575px,46%);display:flex;flex-direction:column;gap:12px;overflow-y:auto;overscroll-behavior:contain;
@@ -469,8 +476,7 @@ footer{position:relative;display:flex;flex-direction:column;align-items:center;
 .rd-thumbs .t:hover{opacity:1;transform:translateY(-4px)}
 .rd-thumbs .t.on{opacity:1;border-color:var(--white)}
 .rd-exp{position:absolute;right:clamp(12px,2vw,20px);bottom:clamp(12px,2vw,28px);z-index:5;width:52px;height:52px;border-radius:14px;
-  display:grid;place-items:center;transition:transform .35s var(--ease)}
-.rd-exp:hover{transform:scale(1.08)}
+  display:grid;place-items:center;color:var(--white);transition:color .3s}
 .gf-nav{position:absolute;top:50%;translate:0 -50%;z-index:6;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;
   transition:transform .35s var(--ease)}
 .gf-nav:hover{transform:scale(1.08)}
