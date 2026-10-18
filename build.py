@@ -56,7 +56,14 @@ def rich(s):
     """[текст] → жёлтый, \\n → перенос строки; остальное экранируется."""
     s = html.escape(s)
     s = re.sub(r"\[(.+?)\]", r"<em>\1</em>", s)
+    # слова через дефис («караоке-лофте») не разрываем по дефису
+    s = re.sub(r"([А-Яа-яЁёA-Za-z]+-[А-Яа-яЁёA-Za-z]+)", r'<span class="nw">\1</span>', s)
     return s.replace("\n", "<br>")
+
+
+def no_widow(s):
+    """Последнее слово заголовка не остаётся одно на строке."""
+    return re.sub(r" (\S+)$", " \\1", s)
 
 
 SHORT = r"в|во|с|со|и|к|ко|о|об|у|а|но|на|по|до|за|из|от|не|для|без|при|про"
@@ -95,7 +102,7 @@ def package_sections(p, data):
             '  <div class="hero-blur"><i></i><i></i><i></i><i></i></div>\n'
             '  <div class="hero-veil"></div>\n'
             '  <div class="wrap"><h1 class="d in" id="heroH1">%s</h1></div>\n'
-            '</section>\n') % rich(nobr(p["hero"]))
+            '</section>\n') % rich(no_widow(nobr(p["hero"])))
     levels = [1, 2, 3] if len(p["cards"]) == 3 else [1] * len(p["cards"])
     cards = "".join(card_html(c, lv) for c, lv in zip(p["cards"], levels))
     common = data["common"]
