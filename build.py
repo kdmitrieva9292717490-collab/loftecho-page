@@ -108,7 +108,7 @@ def package_sections(p, data):
                '  <div class="pk-grid">%s</div>\n'
                '  <div class="pk-common rv up"><p>%s</p><h4>%s</h4><ul>%s</ul></div>\n'
                '</div>\n</section>\n') % (
-        rich(p["title"]), rich(p.get("subtitle", data["corkage"])), cards,
+        rich(nobr(p["title"])), rich(nobr(p.get("subtitle", data["corkage"]))), cards,
         html.escape(common["lead"]), html.escape(common["title"]),
         "".join("<li>%s</li>" % html.escape(x) for x in common["items"]))
     return hero + "\n" + pricing
