@@ -80,6 +80,10 @@ def package_sections(p, data):
     hero = ('<!-- ════════ PACKAGE HERO ════════ -->\n'
             '<section class="hero pk-hero" id="top">\n'
             '  <div class="kbs" id="kbs"></div>\n'
+            # подложка как на главной (Figma: Gradient Overlay снизу) — затемнение сверху, плавное размытие и вуаль
+            '  <div class="hero-top"></div>\n'
+            '  <div class="hero-blur"><i></i><i></i><i></i><i></i></div>\n'
+            '  <div class="hero-veil"></div>\n'
             '  <div class="wrap"><h1 class="d in" id="heroH1">%s</h1></div>\n'
             '</section>\n') % rich(p["hero"])
     levels = [1, 2, 3] if len(p["cards"]) == 3 else [1] * len(p["cards"])
