@@ -512,6 +512,63 @@ footer{position:relative;display:flex;flex-direction:column;align-items:center;
   transition:transform .35s var(--ease)}
 .gf-nav:hover{transform:scale(1.08)}
 .gf-prev{left:20px} .gf-next{right:20px}
+/* базовые правила для новой разметки окна зала (на мобильной выглядят как прежде) */
+.rd-shade{display:none}
+.rd-p{position:relative}
+.rd-badge{position:absolute;top:12px;right:12px}
+.rd-row + .rd-row{margin-top:10px}
+.rd-p .v .sfx span{font-size:1em}
+.rd-book{display:flex;flex-direction:column;gap:12px;align-items:center}
+.rd-book .btn{width:100%}
+.rd-book small{color:var(--w60);font-size:15px}
+.rd-extra p{margin:0;color:var(--white)}
+.rd-extra small{display:block;margin-top:10px;color:var(--w60);font-size:15px}
+
+/* ══ Окна зала и галереи на десктопе — по Figma: Modal/Room Details, Modal/Gallery Fullscreen (1600×947) ══ */
+@media (min-width:861px){
+  .mod{padding:0}
+  .mod-in{max-width:none;width:100%;height:100%;aspect-ratio:auto;max-height:none;border-radius:0;border:0;box-shadow:none}
+  .mod .lg-panel,.mod .lg-panel:hover{background:rgba(5,5,5,.10)}          /* стекло: чёрный 10%, обводка 15%, blur 30 → 15 */
+  .mod-x{right:56px;top:56px;border-radius:10px}
+  .rd-shade{display:block;position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:linear-gradient(90deg,rgba(5,5,5,.74) 0%,rgba(5,5,5,0) 53.75%)}   /* Gradient Background 860 из 1600 */
+  .rd-panel{left:40px;top:40px;bottom:40px;width:568px;gap:16px}
+  .mod .gl{border-radius:10px;padding:16px 24px}
+  .rd-head{display:flex;flex-direction:column;gap:16px}
+  .rd-head h3{font-size:40px;line-height:normal}
+  .rd-head .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .rd-head .tag{border-radius:4px;padding:6px 12px;font-size:18px}
+  .rd-prices{gap:8px}
+  .rd-p{display:flex;flex-direction:column;gap:24px}
+  .rd-p .k{font-size:20px;font-weight:600;line-height:normal;margin:0}
+  .rd-rows{display:flex;flex-direction:column;gap:16px}
+  .rd-row + .rd-row{margin-top:0}
+  .rd-row{display:flex;flex-direction:column;gap:8px}
+  .rd-row .t{font-size:16px;color:var(--w60);margin:0;line-height:normal}
+  .rd-row .v{display:flex;align-items:baseline;gap:12px;color:var(--yellow);font-size:40px;line-height:28px}
+  .rd-row .v span{font-size:inherit}
+  .rd-row .sfx{display:flex;align-items:baseline;gap:1px}
+  .rd-row .per{font-family:var(--f-b);font-size:18px;font-weight:400;color:var(--w60);text-transform:none}
+  .rd-book{gap:8px;align-items:stretch;text-align:center}
+  .rd-book small{font-size:16px}
+  .rd-eq{flex:1;display:flex;flex-direction:column;gap:32px;font-size:20px;font-weight:600;line-height:normal;color:var(--white)}
+  .rd-feat{display:flex;flex-direction:column;gap:16px}
+  .rd-eq b{font-size:18px;margin:0}
+  .rd-eq ul{margin:0;padding-left:28px;gap:8px}
+  .rd-extra{display:flex;flex-direction:column;gap:16px}
+  .rd-extra p{color:var(--w60)}
+  .rd-extra small{margin:0;font-size:16px}
+  /* Gallery Tools: справа снизу 40/40, поля 8; миниатюры 64×64 r4 через 8; неактивные — 80% + затемнение 30% */
+  .rd-tools{position:absolute;right:40px;bottom:40px;z-index:5;display:flex;align-items:center;gap:32px;padding:8px;border-radius:8px}
+  .rd-tools .rd-thumbs{position:static;gap:8px}
+  .rd-thumbs .t{position:relative;width:64px;height:64px;border-radius:4px;border:0;opacity:.8;transition:opacity .3s}
+  .rd-thumbs .t::after{content:'';position:absolute;inset:0;border-radius:inherit;background:rgba(0,0,0,.30);transition:opacity .3s}
+  .rd-thumbs .t:hover{transform:none;opacity:1}
+  .rd-thumbs .t.on{opacity:1}
+  .rd-thumbs .t.on::after{opacity:0}
+  .rd-exp{position:static;width:64px;height:64px;border-radius:10px}
+  .gf-nav{display:none}
+}
 
 /* ══════════════ RESPONSIVE ══════════════ */
 @media (max-width:1300px){
@@ -1036,42 +1093,49 @@ footer{position:relative;display:flex;flex-direction:column;align-items:center;
   <div class="mod-in">
     <div class="mod-bg" id="rdBg"></div>
     <button class="mod-x lg lg-panel" data-close aria-label="Закрыть"><svg width="24" height="24"><use href="#i-x"/></svg></button>
+    <!-- Figma: Modal/Room Details (по одному на зал, данные — ROOMS в скрипте) -->
+    <div class="rd-shade"></div>
     <div class="rd-panel">
-      <div class="gl lg lg-panel">
+      <div class="gl lg lg-panel rd-head">
         <h3 class="d h3" id="rdTitle">—</h3>
         <div class="tags" id="rdTags"></div>
       </div>
       <div class="rd-prices">
         <div class="gl lg lg-panel rd-p">
           <div class="k">Аренда зала</div>
-          <div class="t">Пн-чт</div>
-          <div class="v" id="rdRent">—</div>
+          <div class="rd-rows" id="rdRent"></div>
         </div>
         <div class="gl lg lg-panel rd-p">
-          <div class="k">Цена за гостя <span class="badge">Акция</span></div>
-          <div class="t">Пн-чт (до 23.00)</div>
-          <div class="v" id="rdGuest">—</div>
+          <div class="k">Цена за гостя</div>
+          <span class="badge rd-badge">Акция</span>
+          <div class="rd-rows" id="rdGuest"></div>
         </div>
       </div>
-      <div class="gl lg lg-panel" style="display:flex;flex-direction:column;gap:12px;align-items:center">
-        <button class="btn btn-pink" style="width:100%">Оформить бронь</button>
-        <small style="color:var(--w60);font-size:15px">Минимум: 2 часа • 2 гостя</small>
+      <div class="gl lg lg-panel rd-book">
+        <button class="btn btn-pink">Оформить бронь</button>
+        <small>Минимум: 2&nbsp;часа • 2&nbsp;гостя</small>
       </div>
       <div class="gl lg lg-panel rd-eq">
-        <b>Оснащение зала:</b>
-        <ul>
-          <li>проектор с разрешением Full HD</li>
-          <li>профессиональный объёмный звук</li>
-          <li>караоке-система АСТ-50B на 2 микрофона</li>
-          <li>игровая приставка PlayStation 5 (подробности у администратора)</li>
-          <li>мультимедийные приставки Apple TV и Mi Box</li>
-        </ul>
-        <div style="color:var(--white)">По желанию предоставляем посуду<br>и всё необходимое для комфорта</div>
-        <div style="margin-top:10px;color:var(--w60);font-size:15px">Подробности уточнять у администратора</div>
+        <div class="rd-feat">
+          <b>Оснащение зала:</b>
+          <ul>
+            <li>проектор с&nbsp;разрешением Full HD</li>
+            <li>профессиональный объёмный звук</li>
+            <li>караоке-система АСТ-50B на&nbsp;2&nbsp;микрофона</li>
+            <li>игровая приставка PlayStation 5 (подробности у&nbsp;администратора)</li>
+            <li>мультимедийные приставки Apple TV и&nbsp;Mi Box</li>
+          </ul>
+        </div>
+        <div class="rd-extra">
+          <p>По желанию предоставляем посуду и&nbsp;всё необходимое для комфорта</p>
+          <small>Подробности уточнять у&nbsp;администратора</small>
+        </div>
       </div>
     </div>
-    <div class="rd-thumbs" id="rdThumbs"></div>
-    <button class="rd-exp lg lg-panel" id="rdExp" aria-label="Во весь экран"><svg width="22" height="22"><use href="#i-exp"/></svg></button>
+    <div class="rd-tools">
+      <div class="rd-thumbs" id="rdThumbs"></div>
+      <button class="rd-exp lg lg-panel" id="rdExp" aria-label="Во весь экран"><svg width="32" height="32"><use href="#i-exp"/></svg></button>
+    </div>
   </div>
 </div>
 
@@ -1081,9 +1145,10 @@ footer{position:relative;display:flex;flex-direction:column;align-items:center;
   <div class="mod-in">
     <div class="mod-bg" id="gfBg"></div>
     <button class="mod-x lg lg-panel" data-close aria-label="Закрыть"><svg width="24" height="24"><use href="#i-x"/></svg></button>
+    <!-- Figma: Modal/Gallery Fullscreen — на десктопе только «закрыть» и миниатюры (стрелки скрыты стилями, остаются для мобильной) -->
     <button class="gf-nav gf-prev lg lg-panel" id="gfPrev" aria-label="Назад"><svg width="20" height="20" viewBox="0 0 19.5 16.5" style="transform:rotate(180deg)"><use href="#i-arr"/></svg></button>
     <button class="gf-nav gf-next lg lg-panel" id="gfNext" aria-label="Вперёд"><svg width="20" height="20" viewBox="0 0 19.5 16.5"><use href="#i-arr"/></svg></button>
-    <div class="rd-thumbs" id="gfThumbs" style="right:clamp(12px,2vw,28px)"></div>
+    <div class="rd-tools gf-tools"><div class="rd-thumbs" id="gfThumbs"></div></div>
   </div>
 </div>
 
@@ -1126,14 +1191,19 @@ $$('.dd').forEach(function(dd){
 /* ═══════════ DATA ═══════════ */
 var ROOMS = [
  {name:'Зал космос',  no:'Зал № 1', area:'21', guests:'До 13 гостей', guest:'от 650', rent:'от 3 800',
+  rentA:'3 800', rentB:'4 500', guestA:'650', screen:'4',   /* окно зала — по Figma */
   slides:['r-kosmos-1','r-kosmos-2','r-kosmos-3']},
  {name:'Зал лава',    no:'Зал № 2', area:'18', guests:'До 12 гостей', guest:'от 650', rent:'от 3 500',
+  rentA:'3 500', rentB:'4 300', guestA:'650', screen:'3',
   slides:['r-lava-1','r-lava-2','r-lava-3','r-lava-4','r-lava-5']},
  {name:'Зал тропики', no:'Зал № 3', area:'16', guests:'До 10 гостей', guest:'от 650', rent:'от 3 000',
+  rentA:'3 000', rentB:'3 800', guestA:'650', screen:'2,5',
   slides:['r-tropiki-1','r-tropiki-2','r-tropiki-3','r-tropiki-4']},
  {name:'Зал лагуна',  no:'Зал № 4', area:'17', guests:'До 10 гостей', guest:'от 650', rent:'от 3 000',
+  rentA:'3 000', rentB:'3 800', guestA:'650', screen:'2,5',
   slides:['r-laguna-1','r-laguna-2','r-laguna-3','r-laguna-4','r-laguna-5']},
  {name:'Зал Эйфория', no:'Зал № 5', area:'9',  guests:'До 6 гостей',  guest:'от 650', rent:'от 2 600',
+  rentA:'2 600', rentB:'3 250', guestA:'650', screen:'2,5',
   slides:['r-euphoria-1','r-euphoria-2','r-euphoria-3']}
 ];
 var COMBOS = [
@@ -1542,9 +1612,15 @@ $$('[data-close]').forEach(function(el){ el.addEventListener('click', function()
 function openRoom(i){
   curRoom = i; var r = ROOMS[i];
   $('#rdTitle').textContent = r.name;
-  $('#rdTags').innerHTML = '<span class="tag">'+r.area+' м<sup>2</sup></span><span class="tag">'+r.guests+'</span>';
-  $('#rdRent').innerHTML  = r.rent+' <span>₽/час</span>';
-  $('#rdGuest').innerHTML = r.guest+' <span>₽/час</span>';
+  $('#rdTags').innerHTML = '<span class="tag">'+r.area+' м<sup>2</sup></span><span class="tag">'+r.guests+'</span>'+
+                           '<span class="tag">Экран '+r.screen+' м</span>';
+  /* цены как в Figma: сумма 40 жёлтым, «₽» 40 жёлтым, «/ Час» 18 серым */
+  function row(t, v){
+    return '<div class="rd-row"><div class="t">'+t+'</div><div class="v"><b class="d">'+v+'</b>'+
+           '<span class="sfx"><span class="d">₽</span><span class="per">/&nbsp;Час</span></span></div></div>';
+  }
+  $('#rdRent').innerHTML  = row('Пн–чт', r.rentA) + row('Пт–вс', r.rentB);
+  $('#rdGuest').innerHTML = row('Пн–чт (до 23.00)', r.guestA);
   $('#rdThumbs').innerHTML = r.slides.map(function(s,j){
     return '<div class="t'+(j?'':' on')+'" data-rd="'+j+'" style="background-image:'+img(s)+'"></div>';
   }).join('');

@@ -371,42 +371,49 @@
   <div class="mod-in">
     <div class="mod-bg" id="rdBg"></div>
     <button class="mod-x lg lg-panel" data-close aria-label="Закрыть"><svg width="24" height="24"><use href="#i-x"/></svg></button>
+    <!-- Figma: Modal/Room Details (по одному на зал, данные — ROOMS в скрипте) -->
+    <div class="rd-shade"></div>
     <div class="rd-panel">
-      <div class="gl lg lg-panel">
+      <div class="gl lg lg-panel rd-head">
         <h3 class="d h3" id="rdTitle">—</h3>
         <div class="tags" id="rdTags"></div>
       </div>
       <div class="rd-prices">
         <div class="gl lg lg-panel rd-p">
           <div class="k">Аренда зала</div>
-          <div class="t">Пн-чт</div>
-          <div class="v" id="rdRent">—</div>
+          <div class="rd-rows" id="rdRent"></div>
         </div>
         <div class="gl lg lg-panel rd-p">
-          <div class="k">Цена за гостя <span class="badge">Акция</span></div>
-          <div class="t">Пн-чт (до 23.00)</div>
-          <div class="v" id="rdGuest">—</div>
+          <div class="k">Цена за гостя</div>
+          <span class="badge rd-badge">Акция</span>
+          <div class="rd-rows" id="rdGuest"></div>
         </div>
       </div>
-      <div class="gl lg lg-panel" style="display:flex;flex-direction:column;gap:12px;align-items:center">
-        <button class="btn btn-pink" style="width:100%">Оформить бронь</button>
-        <small style="color:var(--w60);font-size:15px">Минимум: 2 часа • 2 гостя</small>
+      <div class="gl lg lg-panel rd-book">
+        <button class="btn btn-pink">Оформить бронь</button>
+        <small>Минимум: 2&nbsp;часа • 2&nbsp;гостя</small>
       </div>
       <div class="gl lg lg-panel rd-eq">
-        <b>Оснащение зала:</b>
-        <ul>
-          <li>проектор с разрешением Full HD</li>
-          <li>профессиональный объёмный звук</li>
-          <li>караоке-система АСТ-50B на 2 микрофона</li>
-          <li>игровая приставка PlayStation 5 (подробности у администратора)</li>
-          <li>мультимедийные приставки Apple TV и Mi Box</li>
-        </ul>
-        <div style="color:var(--white)">По желанию предоставляем посуду<br>и всё необходимое для комфорта</div>
-        <div style="margin-top:10px;color:var(--w60);font-size:15px">Подробности уточнять у администратора</div>
+        <div class="rd-feat">
+          <b>Оснащение зала:</b>
+          <ul>
+            <li>проектор с&nbsp;разрешением Full HD</li>
+            <li>профессиональный объёмный звук</li>
+            <li>караоке-система АСТ-50B на&nbsp;2&nbsp;микрофона</li>
+            <li>игровая приставка PlayStation 5 (подробности у&nbsp;администратора)</li>
+            <li>мультимедийные приставки Apple TV и&nbsp;Mi Box</li>
+          </ul>
+        </div>
+        <div class="rd-extra">
+          <p>По желанию предоставляем посуду и&nbsp;всё необходимое для комфорта</p>
+          <small>Подробности уточнять у&nbsp;администратора</small>
+        </div>
       </div>
     </div>
-    <div class="rd-thumbs" id="rdThumbs"></div>
-    <button class="rd-exp lg lg-panel" id="rdExp" aria-label="Во весь экран"><svg width="22" height="22"><use href="#i-exp"/></svg></button>
+    <div class="rd-tools">
+      <div class="rd-thumbs" id="rdThumbs"></div>
+      <button class="rd-exp lg lg-panel" id="rdExp" aria-label="Во весь экран"><svg width="32" height="32"><use href="#i-exp"/></svg></button>
+    </div>
   </div>
 </div>
 
@@ -416,8 +423,9 @@
   <div class="mod-in">
     <div class="mod-bg" id="gfBg"></div>
     <button class="mod-x lg lg-panel" data-close aria-label="Закрыть"><svg width="24" height="24"><use href="#i-x"/></svg></button>
+    <!-- Figma: Modal/Gallery Fullscreen — на десктопе только «закрыть» и миниатюры (стрелки скрыты стилями, остаются для мобильной) -->
     <button class="gf-nav gf-prev lg lg-panel" id="gfPrev" aria-label="Назад"><svg width="20" height="20" viewBox="0 0 19.5 16.5" style="transform:rotate(180deg)"><use href="#i-arr"/></svg></button>
     <button class="gf-nav gf-next lg lg-panel" id="gfNext" aria-label="Вперёд"><svg width="20" height="20" viewBox="0 0 19.5 16.5"><use href="#i-arr"/></svg></button>
-    <div class="rd-thumbs" id="gfThumbs" style="right:clamp(12px,2vw,28px)"></div>
+    <div class="rd-tools gf-tools"><div class="rd-thumbs" id="gfThumbs"></div></div>
   </div>
 </div>
