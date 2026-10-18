@@ -152,17 +152,18 @@ section{position:relative;scroll-margin-top:112px}
 .nl>span::after{display:none}
 .nl svg{flex:none;width:16px;height:16px;transition:transform .4s var(--ease)}
 .dd{position:relative;display:flex;align-items:center}
-.dd.open .nl svg{transform:rotate(180deg)}
+/* Figma Nav Dropdown: Default — стрелка вниз, Variant2 — вверх; переход Smart Animate 300 мс ease-out */
+.dd .nl svg{transform:rotate(180deg);transition:transform .3s ease-out}
+.dd.open .nl svg{transform:none}
 /* Figma Dropdown Menu: 253 шириной, поля 16 сверху/снизу, скруглены только нижние углы 16,
    стекло как у шапки (чёрный 10%, обводка 15%, blur 20 → CSS 10) */
 .ddm{position:absolute;top:calc(100% + 18px);left:-12px;width:253px;border-radius:0 0 16px 16px;
   padding:16px 0;background:rgba(5,5,5,.10);border:1px solid var(--w15);
-  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);overflow:hidden;opacity:0;visibility:hidden;transform:translateY(-8px) scale(.98);
-  transform-origin:50% 0;transition:opacity .35s var(--ease),transform .45s var(--ease),visibility .35s}
-.dd.open .ddm{opacity:1;visibility:visible;transform:none}   /* .open ставит скрипт: наведение, щелчок, Esc */
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);overflow:hidden;opacity:0;visibility:hidden;
+  transition:opacity .3s ease-out,visibility .3s}   /* Figma: Smart Animate 300 мс ease-out — меню просто проявляется */
+.dd.open .ddm{opacity:1;visibility:visible}   /* .open ставит скрипт: наведение, щелчок, Esc */
 .ddm a{display:flex;align-items:center;padding:8px 16px;font-size:18px;white-space:nowrap;position:relative;
-  opacity:0;transform:translateX(-10px);transition:opacity .4s var(--ease),transform .4s var(--ease),background-color .25s}
-.dd.open .ddm a{opacity:1;transform:none;transition-delay:calc(var(--i)*32ms + 60ms)}
+  transition:background-color .25s}
 .ddm a:hover{background:var(--w15)}   /* UI Kit → Menu Item: Hover */
 .hdr .ci{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
 .hdr .ci small{font-size:12px;opacity:.7;line-height:normal}
@@ -204,7 +205,7 @@ section{position:relative;scroll-margin-top:112px}
 .kb{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;will-change:transform,opacity;
   transform:scale(1.15);animation:kb 45s infinite linear}
 .kb:nth-child(1){background-image:var(--i-hero-lava);animation-delay:-3s}
-.kb:nth-child(2){background-image:var(--i-kosmos);animation-delay:6s}
+.kb:nth-child(2){background-image:var(--i-kosmos);background-position:50% 61%;animation-delay:6s}   /* в ролике Космос на 20 px выше центра */
 .kb:nth-child(3){background-image:var(--i-hero-tropiki);animation-delay:15s}
 .kb:nth-child(4){background-image:var(--i-laguna);animation-delay:24s}
 .kb:nth-child(5){background-image:var(--i-euphoria);animation-delay:33s}
@@ -674,7 +675,7 @@ footer{position:relative;display:flex;flex-direction:column;align-items:center;
       <nav class="nav">
         <a class="nl" href="#rooms"><span>Залы</span></a>
         <div class="dd">
-          <button class="nl"><span>Пакетные предложения</span><svg viewBox="0 0 16 16" style="transform:rotate(180deg)"><use href="#i-chev"/></svg></button>
+          <button class="nl"><span>Пакетные предложения</span><svg viewBox="0 0 16 16"><use href="#i-chev"/></svg></button>
           <div class="ddm">
             <a style="--i:0" href="#combos">День рождения</a>
             <a style="--i:1" href="#combos">Девичник</a>
