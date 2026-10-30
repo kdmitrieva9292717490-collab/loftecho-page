@@ -1329,6 +1329,7 @@ if(stack) ROOMS.forEach(function(r, idx){
   stack.appendChild(slot);
 });
 var slots = stack ? $$('.room-slot', stack) : [], cards = stack ? $$('.room', stack) : [], dims = stack ? $$('.room-dim', stack) : [];
+var roomCov = slots.map(function(){ return 0 });
 
 function Slider(root, dur){
   this.bars = $$('.bar', root); this.slides = $$('.rp', root);
@@ -1647,13 +1648,17 @@ function frame(now){
   }
   fFx.tick(dt);
 
+  /* наезд догоняет прокрутку мягко (~0,1 с), а не повторяет каждый толчок колеса */
+  var kFollow = RM ? 1 : 1 - Math.exp(-dt/110);
   for(var i=0;i<slots.length;i++){
     var cov = 0;
     if(!isMobile && i < slots.length-1){
       var a = slots[i].getBoundingClientRect(), b = slots[i+1].getBoundingClientRect();
       cov = clamp((a.bottom - b.top) / a.height, 0, 1);
     }
-    var e = cov*cov*(3-2*cov);
+    roomCov[i] += (cov - roomCov[i]) * kFollow;
+    if(Math.abs(cov - roomCov[i]) < .001) roomCov[i] = cov;
+    var e = roomCov[i]*roomCov[i]*(3-2*roomCov[i]);
     cards[i].style.transform = 'scale('+(1-.10*e)+') translate3d(0,'+(e*10)+'px,0)';
     dims[i].style.opacity = String(e*.55);
   }
